@@ -90,7 +90,7 @@ namespace RPG
             // timer2
             // 
             this.timer2.Enabled = true;
-            this.timer2.Interval = 10;
+            this.timer2.Interval = 25;
             this.timer2.Tick += new System.EventHandler(this.Boomerang_Tick);
             // 
             // timer3
@@ -108,7 +108,7 @@ namespace RPG
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(463, 144);
+            this.pictureBox1.Location = new System.Drawing.Point(472, 141);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(1093, 220);
             this.pictureBox1.TabIndex = 4;
@@ -128,6 +128,7 @@ namespace RPG
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 

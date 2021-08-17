@@ -18,13 +18,17 @@ namespace RPG
         static PictureBox player = new PictureBox();
         public Form1()
         {
+
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             InitializeComponent();
-            
-
+            beatit.SoundLocation = "beat.wav";
+            beatit.PlayLooping();
+           
         }
+        System.Media.SoundPlayer beatit = new System.Media.SoundPlayer();
 
+        
         private void Exit_Click(object sender, EventArgs e)
         {
             Close();
@@ -32,18 +36,23 @@ namespace RPG
 
         static bool begin = false;
         PictureBox picture = new PictureBox();
+        static bool clickenabled = false;
         private void Start_Click(object sender, EventArgs e)
         {
+            clickenabled = true;
             Controls.Clear();
             int y = 0;
             StreamReader levelLoader = new StreamReader("level0.txt");
 
             Controls.Add(picture);
+
+            picture.MouseClick += new MouseEventHandler(Form1_MouseClick);
             picture.Width = 50;
             picture.Height = 20;
 
             Button map = new Button();
             Controls.Add(map);
+            map.MouseClick += new MouseEventHandler(Form1_MouseClick);
             map.Enabled = false;
             map.Visible = false;
             while (!levelLoader.EndOfStream)
@@ -76,6 +85,7 @@ namespace RPG
                         placeHolder.Name = name.ToString();
                         Controls.Add(placeHolder);
 
+                        placeHolder.MouseClick += new MouseEventHandler(Form1_MouseClick);
 
                         name++;
 
@@ -87,6 +97,8 @@ namespace RPG
                         player.Tag = "player.map";
                         player.Image = Image.FromFile(@"player\right\0.png");
                         Controls.Add(player);
+
+                        player.MouseClick += new MouseEventHandler(Form1_MouseClick);
                         player.Top = y * 60;
                         player.Left = i * 60;
                         player.BackColor = Color.Transparent;
@@ -153,17 +165,18 @@ namespace RPG
                     if (w && n != 1)
                     {
 
-                        placeHolder.Size = new Size(scale, (n - 1) * scale);
+                        placeHolder.Size = new Size(scale, n * scale);
                         placeHolder.Tag = "wall.map";
-                        placeHolder.Image = Image.FromFile("wall.png");
+                        placeHolder.BackgroundImage = Image.FromFile("wall.png");
 
                         Controls.Add(placeHolder);
+                        placeHolder.MouseClick += new MouseEventHandler(Form1_MouseClick);
                         placeHolder.Name = name.ToString();
 
                         name++;
 
                     }
-                    placeHolder.Top = Convert.ToInt32((oi + 0.5f) * scale);
+                    placeHolder.Top = (int)((oi + 0.66667) * scale);
                     placeHolder.Left = y * scale;
                 }
                 y++;
@@ -191,6 +204,7 @@ namespace RPG
             }
             begin = true;
         }
+
         static int name = 0;
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -218,18 +232,18 @@ namespace RPG
         private void back_Click(object sender, EventArgs e)
         {
             Controls.Clear();
-            InitializeComponent();
+            Controls.Add(Start);
+            Controls.Add(pictureBox1);
+            Controls.Add(Options);
+            Controls.Add(Exit);
         }
-        static bool x = true;
         static bool p = false;
-        static int dis = 0;
-        static Label hat = new Label();
+        static PictureBox hat = new PictureBox();
         private void bumerang()
         {
-            hat.Text = "♪";
-            hat.Font = new Font("Segoe UI", 48F, FontStyle.Regular, GraphicsUnit.Point);
+            
             hat.Tag = "bullet.map.wall";
-            hat.Size = new Size(150, 150);
+            hat.Size = new Size(26, 13);
             hat.Location = player.Location;
             hat.Visible = true;
             hat.Enabled = false;
@@ -252,13 +266,9 @@ namespace RPG
         static string locked2 = locked;
 
         static bool jump = false;
-        static int wallminus = 0;
+
         private void timer1_Tick(object sender, EventArgs e)
             {
-            if (airSpeed < 0)
-            {
-
-            }
             if (upb && up && !down)
             {
                 foreach (Control x in Controls)
@@ -311,6 +321,7 @@ namespace RPG
                         }
                     }
                 }
+
             }
             upb = true;
             downb = true;
@@ -323,14 +334,6 @@ namespace RPG
                 {
                     if (x is PictureBox && x.Tag.ToString().Contains("wall"))
                     {
-
-
-
-                        if ((x.Left < (player.Left + player.Width) && (x.Left + x.Width) > player.Left) && (x.Top < (player.Top + player.Height) + airSpeed) && x.Top >= (player.Top + player.Height))
-                        {
-                            wallminus = x.Top - player.Bottom;
-                        }
-
                         if ((x.Top < (player.Top + player.Height) && (x.Top + x.Height) > player.Top) && (x.Left + x.Width) == player.Left)
                         {
                             leftb = false;
@@ -396,18 +399,21 @@ namespace RPG
                     player.BackColor = Color.Transparent;
                 }
             }
-            else if (e.KeyCode == Keys.B)
-            {
-                bullet = true;
-            }
             else if (e.KeyCode == Keys.Space && OnPlatform())
             {
                 jump = true;
                 once = true;
                 airSpeed = 21;
             }
+            else if (e.KeyCode == Keys.B)
+            {
+                debug = true;
+            }
         }
         bool once = false;
+
+        static bool debug = false;
+
         bool OnPlatform()
         {
             bool plat = false;
@@ -466,169 +472,254 @@ namespace RPG
                 }
             }
         }
-        static int a = 0;
         static int counter = 0;
+        static int speedboom = 30;
+        static int hatspin = 0;
+        public bool ELSE;
+        public int move = 0;
         private void Boomerang_Tick(object sender, EventArgs e)
         {
+            foreach (Control x in Controls)
+            {
+                ELSE = true;
+                if (x.Tag != null)
+                {
+                    if (x.Tag.ToString().Contains("wall"))
+                    {
+                        if ((x.Left < hat.Right + (int)(dirx * speedboom) && x.Right > hat.Left + (int)(dirx * speedboom)) && (x.Bottom >= hat.Top + (int)(diry * speedboom)) && x.Bottom <= hat.Top)
+                        {
+                            foreach (Control y in Controls)
+                            {
+                                if (y.Tag != null)
+                                {
+                                    if (y.Tag.ToString().Contains("wall"))
+                                    {
+                                        if ((y.Top < hat.Bottom + (int)((x.Bottom - hat.Top) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Bottom - hat.Top) / dirx * diry)) && (y.Right >= hat.Left + (int)((x.Bottom - hat.Top) / diry * dirx)) && y.Right <= hat.Left)
+                                        {
+                                            //hat.Top += (int)((y.Right - hat.Left) / dirx * diry);
+                                            hat.Left = y.Right;
+                                            dirx = dirx * -1;
+                                            ELSE = false;
+                                        }
+                                        else if ((y.Top < hat.Bottom + (int)((x.Bottom - hat.Top) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Bottom - hat.Top) / dirx * diry)) && (y.Left <= hat.Right + (int)((x.Bottom - hat.Top) / diry * dirx)) && y.Left >= hat.Right)
+                                        {
+                                            //hat.Top += (int)((y.Right - hat.Left) / dirx * diry);
+                                            hat.Left = y.Left - hat.Width;
+                                            dirx = dirx * -1;
+                                            ELSE = false;
+                                        }
+                                    }
+                                }
+                            }
+                            if (ELSE)
+                            {
+                                hat.Left += (int)((x.Bottom - hat.Top) / diry * dirx);
+                            }
+                            hat.Top = x.Bottom;
+                            diry = diry * -1;
+                            move++;
+                        }
+                        if ((x.Left < hat.Right + (int)(dirx * speedboom) && x.Right > hat.Left + (int)(dirx * speedboom)) && (x.Top <= hat.Bottom + (int)(diry * speedboom)) && x.Top >= hat.Bottom)
+                        {
+                            foreach (Control y in Controls)
+                            {
+                                if (y.Tag != null)
+                                {
+                                    if (y.Tag.ToString().Contains("wall"))
+                                    {
+                                        if ((y.Top < hat.Bottom + (int)((x.Top - hat.Bottom) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Top - hat.Bottom) / dirx * diry)) && (y.Right >= hat.Left + (int)((x.Top - hat.Bottom) / diry * dirx)) && y.Right <= hat.Left)
+                                        {
+                                            //hat.Top += (int)((y.Right - hat.Left) / dirx * diry);
+                                            hat.Left = y.Right;
+                                            dirx = dirx * -1;
+                                            ELSE = false;
+                                        }
+                                        else if ((y.Top < hat.Bottom + (int)((x.Top - hat.Bottom) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Top - hat.Bottom) / dirx * diry)) && (y.Left <= hat.Right + (int)((x.Top - hat.Bottom) / diry * dirx)) && y.Left >= hat.Right)
+                                        {
+                                            //hat.Top += (int)((y.Left - hat.Right) / dirx * diry);
+                                            hat.Left = y.Left - hat.Width;
+                                            dirx = dirx * -1;
+                                            ELSE = false;
+                                        }
+                                    }
+                                }
+                            }
+                            if (ELSE)
+                            {
+                                hat.Left += (int)((x.Top - hat.Bottom) / diry * dirx);
+                            }
+                            hat.Top = x.Top - hat.Height;
+                            diry = diry * -1;
+                            move++;
+                        }
+                        if ((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Right >= hat.Left + (int)(dirx * speedboom)) && x.Right <= hat.Left)
+                        {
+                            foreach (Control y in Controls)
+                            {
+                                if (y.Tag != null)
+                                {
+                                    if (y.Tag.ToString().Contains("wall"))
+                                    {
+                                        if ((y.Left < hat.Right + (int)((x.Right - hat.Left) / diry * dirx) && y.Right > hat.Left + (int)((x.Right - hat.Left) / diry * dirx)) && (y.Bottom >= hat.Top + (int)((x.Right - hat.Left) / dirx * diry)/**/) && y.Bottom <= hat.Top)
+                                        {
+                                            //hat.Left += (int)((y.Bottom - hat.Top) / diry * dirx);
+                                            hat.Top = y.Bottom;
+                                            diry = diry * -1;
+                                            ELSE = false;
+                                        }
+                                        else if ((y.Left < hat.Right + (int)((x.Right - hat.Left) / diry * dirx) && y.Right > hat.Left + (int)((x.Right - hat.Left) / diry * dirx)) && (y.Top <= hat.Bottom + (int)((x.Right - hat.Left) / dirx * diry)/**/) && y.Top >= hat.Bottom)
+                                        {
+                                            //hat.Left += (int)((y.Top - hat.Bottom) / diry * dirx);
+                                            hat.Top = y.Top - hat.Height;
+                                            diry = diry * -1;
+                                            ELSE = false;
+                                        }
+                                    }
+                                }
+                            }
+                            if (ELSE)
+                            {
+                                hat.Top += (int)((x.Right - hat.Left) / dirx * diry)/**/;
+                            }
+                            hat.Left = x.Right;
+                            dirx = dirx * -1;
+                            move++;
+                        }
+                        if ((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Left <= hat.Right + (int)(dirx * speedboom)) && x.Left >= hat.Right)
+                        {
+                            
+                            foreach (Control y in Controls)
+                            {
+                                if (y.Tag != null)
+                                {
+                                    if (y.Tag.ToString().Contains("wall"))
+                                    {
+                                        if (debug)
+                                        {
+
+                                        }
+                                        if ((y.Left < hat.Right + (int)((x.Left - hat.Right) / diry * dirx) && y.Right > hat.Left + (int)((x.Left - hat.Right) / diry * dirx)) && (y.Bottom >= hat.Top + (int)((x.Left - hat.Right) / dirx * diry)/**/) && y.Bottom <= hat.Top)
+                                        {
+                                            hat.Top = y.Bottom;
+                                            diry = diry * -1;
+                                            ELSE = false;
+                                        }
+                                        else if ((y.Left < hat.Right + (int)((x.Left - hat.Right) / diry * dirx) && y.Right > hat.Left + (int)((x.Left - hat.Right) / diry * dirx)) && (y.Top <= hat.Bottom + (int)((x.Left - hat.Right) / dirx * diry)/**/) && y.Top >= hat.Bottom)
+                                        {
+                                            hat.Top = y.Top - hat.Height;
+                                            diry = diry * -1;
+                                            ELSE = false;
+                                        }
+                                    }
+                                }
+                            }
+                            if (ELSE)
+                            {
+                                hat.Top += (int)((x.Left - hat.Right) / dirx * diry);
+                            }
+                            hat.Left = x.Left - hat.Width;
+                            dirx = dirx * -1;
+                            move++;
+                        }
+                    }
+                }
+            }
             if (bullet)
             {
+                hatspin++;
+                if (hatspin % 6 == 0)
+                {
+                    if (hatspin == 6)
+                    {
+                        hat.Image = Image.FromFile(@"hat\0.png");
+                    }
+                    else if(hatspin == 12)
+                    {
+                        hat.Image = Image.FromFile(@"hat\1.png");
+                        hatspin = 0;
+                    }
+                }                
+                if (move == 0 || p)
+                {
+                    hat.Top += (int)(diry * speedboom);
+                    hat.Left += (int)(dirx * speedboom);
+                }
+                else
+                {
+                    move = 0;
+                }
                 if (l)
                 {
                     bumerang();
                     l = false;
-                    locked = dir;
-                    if (up && left)
-                    {
-                        locked = "up";
-                        locked2 = "left";
-                    }
-                    if (down && left)
-                    {
-                        locked = "down";
-                        locked2 = "left";
-                    }
-                    if (down && right)
-                    {
-                        locked = "down";
-                        locked2 = "right";
-                    }
-                    if (up && right)
-                    {
-                        locked = "up";
-                        locked2 = "right";
-                    }
-                }
-                if (x)
-                {
-                    if (dis < 30)
-                    {
-                        dis++;
-                        if (locked == "up" && locked2 == "right")
-                        {
-                            hat.Top -= 10;
-                            hat.Left += 10;
-                        }
-                        else if (locked == "up" && locked2 == "left")
-                        {
-                            hat.Top -= 10;
-                            hat.Left -= 10;
-                        }
-                        else if (locked == "down" && locked2 == "left")
-                        {
-                            hat.Top += 10;
-                            hat.Left -= 10;
-                        }
-                        else if (locked == "down" && locked2 == "right")
-                        {
-                            hat.Top += 10;
-                            hat.Left += 10;
-                        }
-                        else if (locked == "up")
-                        {
-                            hat.Top -= 15;
-                        }
-                        else if (locked == "down")
-                        {
-                            hat.Top += 15;
-                        }
-
-                        else if (locked == "left")
-                        {
-                            hat.Left -= 15;
-                        }
-
-                        else if (locked == "right")
-                        {
-                            hat.Left += 15;
-                        }
-
-                    }
-
-                    if (dis == 30)
-                    {
-
-                        a += 10;
-                        if (a == 300)
-                        {
-                            x = false;
-                            p = true;
-                            dis = 0;
-                            a = 0;
-                        }
-
-
-                    }
                 }
                 if (p)
                 {
-                    float t = 0;
-
-
-                    if (hat.Top == player.Top || hat.Left == player.Left)
+                    if (hat.Top == (player.Top + 15) || hat.Left == (player.Left + (player.Width / 2)))
                     {
-                        if (hat.Left == player.Left)
+                        if (hat.Left == (player.Left + (player.Width / 2)))
                         {
-                            int b = 1;
-                            if (hat.Top > player.Top)
+                            diry = 1;
+                            if (hat.Top > (player.Top + 15))
                             {
-                                b = -1;
+                                diry = -1;
                             }
-                            hat.Top += 15 * b;
                         }
                         else
                         {
-                            int b = 1;
-                            if (hat.Left > player.Left)
+                            dirx = 1;
+                            if (hat.Left > (player.Left + (player.Width / 2)))
                             {
-                                b = -1;
+                                dirx = -1;
                             }
-                            hat.Left += 15 * b;
                         }
                     }
                     else
                     {
-                        t = (float)Math.Abs(hat.Top - player.Top) / (float)(Math.Abs(hat.Top - player.Top) + (float)Math.Abs(hat.Left - player.Left));
+                        float t = (float)Math.Abs(hat.Top - (player.Top + 15)) / (float)(Math.Abs(hat.Top - (player.Top + 15)) + (float)Math.Abs(hat.Left - (player.Left + (player.Width / 2))));
                         int a = 1;
-                        if (hat.Top > player.Top)
+                        if (hat.Top > (player.Top + 15))
                         {
                             a = -1;
                         }
-                        hat.Top += (int)(t * 15) * a;
+                        diry = t * a;
                         a = 1;
-                        if (hat.Left > player.Left)
+                        if (hat.Left > (player.Left + (player.Width / 2)))
                         {
                             a = -1;
                         }
-                        hat.Left += (15 - ((int)(t * 15))) * a;
+                        dirx = (1 - t) * a;
                     }
 
 
                     if (hat.Bounds.IntersectsWith(player.Bounds))
                     {
                         counter++;
-                        if (counter == 10)
+                        if (counter == 5)
                         {
                             p = false;
-                            x = true;
                             l = true;
-                            locked = dir;
-                            locked2 = locked;
                             counter = 0;
                         }
-                       
-
                     }
-
-
                 }
                 if (l)
                 {
                     bullet = false;
                     hat.Visible = false;
                     Controls.Remove(hat);
-                    dis = 0;
                 }
 
+                if (!p)
+                {
+                    counter++;
+                }
+                if (counter == 100)
+                {
+                    clickenabled = true;
+                    p = true;
+                    counter = 0;
+                }
             }
         }
 
@@ -764,6 +855,53 @@ namespace RPG
                     }
                     jump = false;
                     airSpeed = 21;
+                }
+            }
+        }
+        static float dirx;
+        static float diry;
+
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+            
+            if (clickenabled)
+            {
+                clickenabled = false;
+                bullet = true;
+                if (MousePosition.Y == player.Top + (int)player.Height / 2 || MousePosition.X == player.Left + (int)player.Width / 2)
+                {
+                    if (MousePosition.X == player.Left + (int)player.Width / 2)
+                    {
+                        diry = 1;
+                        if (MousePosition.Y > player.Top + (int)player.Height / 2)
+                        {
+                            diry = -1;
+                        }
+                    }
+                    else
+                    {
+                        dirx = 1;
+                        if (MousePosition.X > player.Left + (int)player.Width / 2)
+                        {
+                            dirx = -1;
+                        }
+                    }
+                }
+                else
+                {
+                    float t = (float)Math.Abs(MousePosition.Y - (player.Top + (int)player.Height / 2)) / (float)(Math.Abs(MousePosition.Y - (player.Top + (int)player.Width / 2)) + (float)Math.Abs(MousePosition.X - (player.Left + (int)player.Width / 2)));
+                    int a = 1;
+                    if (MousePosition.Y < player.Top + (int)player.Height / 2)
+                    {
+                        a = -1;
+                    }
+                    diry = t * a;
+                    a = 1;
+                    if (MousePosition.X < player.Left + (int)player.Width / 2)
+                    {
+                        a = -1;
+                    }
+                    dirx = (1 - t) * a;
                 }
             }
         }
