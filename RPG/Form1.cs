@@ -202,6 +202,11 @@ namespace RPG
                     }
                 }
             }
+
+            air.Size = new Size(50, 1);
+            air.Location = new Point(player.Left, player.Bottom);
+            air.BackColor = Color.FromArgb(0, 173, 255);
+            air.Tag = "wall";
             begin = true;
         }
 
@@ -267,8 +272,12 @@ namespace RPG
 
         static bool jump = false;
 
+        PictureBox air = new PictureBox();
+
+        bool f = true;
         private void timer1_Tick(object sender, EventArgs e)
             {
+            
             if (upb && up && !down)
             {
                 foreach (Control x in Controls)
@@ -348,7 +357,7 @@ namespace RPG
                             {
                                 if (y.Tag != null)
                                 {
-                                    if (y is PictureBox && y.Tag.ToString().Contains("wall"))
+                                    if (y is PictureBox && y.Tag.ToString().Contains("wall.map"))
                                     {
                                         if (left)
                                         {
@@ -399,19 +408,27 @@ namespace RPG
                     player.BackColor = Color.Transparent;
                 }
             }
-            else if (e.KeyCode == Keys.Space && OnPlatform())
+            else if (e.KeyCode == Keys.ShiftKey)
+            {
+                airwalk = true;
+                doublejump++;
+            }
+            else if (e.KeyCode == Keys.Space && OnPlatform() && !airwalk && doublejump < 2)
             {
                 jump = true;
                 once = true;
                 airSpeed = 21;
+                Controls.Remove(air);
+                
             }
+           
             else if (e.KeyCode == Keys.B)
             {
                 debug = true;
             }
         }
         bool once = false;
-
+        static bool airwalk = false;
         static bool debug = false;
 
         bool OnPlatform()
@@ -423,6 +440,10 @@ namespace RPG
                 {
                     if (x.Tag.ToString().Contains("wall") && x.Left < player.Right && x.Right > player.Left && player.Bottom == x.Top)
                     {
+                        if (x.Tag.ToString().Contains("map"))
+                        {
+                            doublejump = 0;
+                        }
                         plat = true;
                     }
                 }
@@ -470,6 +491,10 @@ namespace RPG
                 {
                     player.Image = Image.FromFile(@"player\right\0.png");
                 }
+            }
+            else if (e.KeyCode == Keys.ShiftKey)
+            {
+                airwalk = false;
             }
         }
         static int counter = 0;
@@ -724,7 +749,7 @@ namespace RPG
         }
 
         private void Moonwalk_Tick(object sender, EventArgs e)
-        {
+        {            
             if (!jump)
             {
                 if (leftb && left && !right)
@@ -748,11 +773,26 @@ namespace RPG
                 }
             }
         }
-        static int airSpeed = 21;
-
+        int airSpeed = 21;
+        int doublejump = 0;
         int n = -1;
+        int k = 0;
         private void AirTime_Tick(object sender, EventArgs e)
         {
+            if (!airwalk && !f)
+            {
+                k++;
+                if (k == 10)
+                {
+                    Controls.Remove(air);
+                    f = true;
+                    k = 0;
+                }
+            }
+            if (airwalk && !f)
+            {
+                jump = false;
+            }
             if (HeadHit())
             {
                 airSpeed = 0;
@@ -768,6 +808,12 @@ namespace RPG
                 {
                     jump = true;
                     airSpeed = 0;
+                }
+                if (airwalk && f && jump)
+                {
+                    Controls.Add(air);
+                    f = false;
+                    jump = false;
                 }
                 foreach (Control x in this.Controls)
                 {
