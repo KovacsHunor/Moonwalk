@@ -42,6 +42,7 @@ namespace RPG
             this.timer3 = new System.Windows.Forms.Timer(this.components);
             this.jumptimer = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.Fuel = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -110,9 +111,15 @@ namespace RPG
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(472, 141);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1093, 220);
+            this.pictureBox1.Size = new System.Drawing.Size(1100, 220);
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
+            // 
+            // Fuel
+            // 
+            this.Fuel.Enabled = true;
+            this.Fuel.Interval = 10;
+            this.Fuel.Tick += new System.EventHandler(this.Fuel_Tick);
             // 
             // Form1
             // 
@@ -143,6 +150,7 @@ namespace RPG
         private System.Windows.Forms.Timer timer3;
         private System.Windows.Forms.Timer jumptimer;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Timer Fuel;
     }
 }
 

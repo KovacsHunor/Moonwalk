@@ -28,7 +28,7 @@ namespace RPG
         }
         System.Media.SoundPlayer beatit = new System.Media.SoundPlayer();
 
-        
+        Label frontlabel = new Label();
         private void Exit_Click(object sender, EventArgs e)
         {
             Close();
@@ -39,8 +39,19 @@ namespace RPG
         static bool clickenabled = false;
         private void Start_Click(object sender, EventArgs e)
         {
+            label.Visible = true;
             clickenabled = true;
             Controls.Clear();
+
+            backlabel.Location = new System.Drawing.Point(1920 - (60 + 70 * 5), 60);
+            backlabel.Size = new Size(350, 23);
+            backlabel.BackColor = Color.FromArgb(104, 104, 104);
+
+            this.label.Location = new System.Drawing.Point(1920 - (60 + 70 * 5), 60);
+            label.BackColor = Color.FromArgb(0, 173, 255);
+            Controls.Add(frontlabel);
+            Controls.Add(label);
+            Controls.Add(backlabel);
             int y = 0;
             StreamReader levelLoader = new StreamReader("level0.txt");
 
@@ -376,6 +387,7 @@ namespace RPG
                 }
             }
         }
+        bool s = true;
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.A)
@@ -408,23 +420,32 @@ namespace RPG
                     player.BackColor = Color.Transparent;
                 }
             }
-            else if (e.KeyCode == Keys.ShiftKey)
+            else if (e.KeyCode == Keys.ShiftKey && fuelvalue != 0)
             {
                 airwalk = true;
-                doublejump++;
             }
-            else if (e.KeyCode == Keys.Space && OnPlatform() && !airwalk && doublejump < 2)
+            else if (e.KeyCode == Keys.Space && OnPlatform() && !airwalk)
             {
                 jump = true;
                 once = true;
-                airSpeed = 21;
-                Controls.Remove(air);
-                
+                if (s && OnPlatform(0))
+                {
+                    airSpeed = 21;
+                    Controls.Remove(air);
+                    s = false;
+                }
             }
            
             else if (e.KeyCode == Keys.B)
             {
-                debug = true;
+                if (debug)
+                {
+                    debug = false;
+                }
+                else
+                {
+                    debug = true;
+                }
             }
         }
         bool once = false;
@@ -442,9 +463,27 @@ namespace RPG
                     {
                         if (x.Tag.ToString().Contains("map"))
                         {
-                            doublejump = 0;
+                            s = true;
                         }
                         plat = true;
+                    }
+                }
+            }
+            return plat;
+        }
+        bool OnPlatform(int i)
+        {
+            bool plat = false;
+            foreach (Control x in Controls)
+            {
+                if (x.Tag != null)
+                {
+                    if (x.Tag.ToString().Contains("wall") && x.Left < player.Right && x.Right > player.Left && player.Bottom == x.Top)
+                    {
+                        if (!x.Tag.ToString().Contains("map"))
+                        {
+                            plat = true;
+                        }
                     }
                 }
             }
@@ -501,7 +540,7 @@ namespace RPG
         static int speedboom = 30;
         static int hatspin = 0;
         public bool ELSE;
-        public int move = 0;
+        public bool move = true;
         private void Boomerang_Tick(object sender, EventArgs e)
         {
             foreach (Control x in Controls)
@@ -521,14 +560,12 @@ namespace RPG
                                     {
                                         if ((y.Top < hat.Bottom + (int)((x.Bottom - hat.Top) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Bottom - hat.Top) / dirx * diry)) && (y.Right >= hat.Left + (int)((x.Bottom - hat.Top) / diry * dirx)) && y.Right <= hat.Left)
                                         {
-                                            //hat.Top += (int)((y.Right - hat.Left) / dirx * diry);
                                             hat.Left = y.Right;
                                             dirx = dirx * -1;
                                             ELSE = false;
                                         }
                                         else if ((y.Top < hat.Bottom + (int)((x.Bottom - hat.Top) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Bottom - hat.Top) / dirx * diry)) && (y.Left <= hat.Right + (int)((x.Bottom - hat.Top) / diry * dirx)) && y.Left >= hat.Right)
                                         {
-                                            //hat.Top += (int)((y.Right - hat.Left) / dirx * diry);
                                             hat.Left = y.Left - hat.Width;
                                             dirx = dirx * -1;
                                             ELSE = false;
@@ -542,7 +579,7 @@ namespace RPG
                             }
                             hat.Top = x.Bottom;
                             diry = diry * -1;
-                            move++;
+                            move = false;
                         }
                         if ((x.Left < hat.Right + (int)(dirx * speedboom) && x.Right > hat.Left + (int)(dirx * speedboom)) && (x.Top <= hat.Bottom + (int)(diry * speedboom)) && x.Top >= hat.Bottom)
                         {
@@ -554,14 +591,12 @@ namespace RPG
                                     {
                                         if ((y.Top < hat.Bottom + (int)((x.Top - hat.Bottom) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Top - hat.Bottom) / dirx * diry)) && (y.Right >= hat.Left + (int)((x.Top - hat.Bottom) / diry * dirx)) && y.Right <= hat.Left)
                                         {
-                                            //hat.Top += (int)((y.Right - hat.Left) / dirx * diry);
                                             hat.Left = y.Right;
                                             dirx = dirx * -1;
                                             ELSE = false;
                                         }
                                         else if ((y.Top < hat.Bottom + (int)((x.Top - hat.Bottom) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Top - hat.Bottom) / dirx * diry)) && (y.Left <= hat.Right + (int)((x.Top - hat.Bottom) / diry * dirx)) && y.Left >= hat.Right)
                                         {
-                                            //hat.Top += (int)((y.Left - hat.Right) / dirx * diry);
                                             hat.Left = y.Left - hat.Width;
                                             dirx = dirx * -1;
                                             ELSE = false;
@@ -575,7 +610,7 @@ namespace RPG
                             }
                             hat.Top = x.Top - hat.Height;
                             diry = diry * -1;
-                            move++;
+                            move = false;
                         }
                         if ((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Right >= hat.Left + (int)(dirx * speedboom)) && x.Right <= hat.Left)
                         {
@@ -587,14 +622,12 @@ namespace RPG
                                     {
                                         if ((y.Left < hat.Right + (int)((x.Right - hat.Left) / diry * dirx) && y.Right > hat.Left + (int)((x.Right - hat.Left) / diry * dirx)) && (y.Bottom >= hat.Top + (int)((x.Right - hat.Left) / dirx * diry)/**/) && y.Bottom <= hat.Top)
                                         {
-                                            //hat.Left += (int)((y.Bottom - hat.Top) / diry * dirx);
                                             hat.Top = y.Bottom;
                                             diry = diry * -1;
                                             ELSE = false;
                                         }
                                         else if ((y.Left < hat.Right + (int)((x.Right - hat.Left) / diry * dirx) && y.Right > hat.Left + (int)((x.Right - hat.Left) / diry * dirx)) && (y.Top <= hat.Bottom + (int)((x.Right - hat.Left) / dirx * diry)/**/) && y.Top >= hat.Bottom)
                                         {
-                                            //hat.Left += (int)((y.Top - hat.Bottom) / diry * dirx);
                                             hat.Top = y.Top - hat.Height;
                                             diry = diry * -1;
                                             ELSE = false;
@@ -604,11 +637,11 @@ namespace RPG
                             }
                             if (ELSE)
                             {
-                                hat.Top += (int)((x.Right - hat.Left) / dirx * diry)/**/;
+                                hat.Top += (int)((x.Right - hat.Left) / dirx * diry);
                             }
                             hat.Left = x.Right;
                             dirx = dirx * -1;
-                            move++;
+                            move = false;
                         }
                         if ((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Left <= hat.Right + (int)(dirx * speedboom)) && x.Left >= hat.Right)
                         {
@@ -644,7 +677,7 @@ namespace RPG
                             }
                             hat.Left = x.Left - hat.Width;
                             dirx = dirx * -1;
-                            move++;
+                            move = false;
                         }
                     }
                 }
@@ -664,14 +697,16 @@ namespace RPG
                         hatspin = 0;
                     }
                 }                
-                if (move == 0 || p)
+
+
+                if (move || p)
                 {
                     hat.Top += (int)(diry * speedboom);
                     hat.Left += (int)(dirx * speedboom);
                 }
                 else
                 {
-                    move = 0;
+                    move = true;
                 }
                 if (l)
                 {
@@ -774,16 +809,16 @@ namespace RPG
             }
         }
         int airSpeed = 21;
-        int doublejump = 0;
         int n = -1;
         int k = 0;
         private void AirTime_Tick(object sender, EventArgs e)
         {
-            if (!airwalk && !f)
+            if (!airwalk && !f || fuelvalue < 1)
             {
                 k++;
                 if (k == 10)
                 {
+                    airwalk = false;
                     Controls.Remove(air);
                     f = true;
                     k = 0;
@@ -951,5 +986,40 @@ namespace RPG
                 }
             }
         }
+
+        Label backlabel = new Label();
+        Label label = new Label();
+        int fuelvalue = 50;
+        int cooldown = 30;
+        private void Fuel_Tick(object sender, EventArgs e)
+        {
+            this.label.Width = fuelvalue * 7;
+            frontlabel.Text = fuelvalue.ToString();
+            if (airwalk)
+            {
+                fuelvalue --;
+                cooldown = 30;
+            }
+            else if(fuelvalue < 50)
+            {
+                cooldown--;
+                if (cooldown == 0)
+                {
+                    fuelvalue += 2;
+                    cooldown++;
+                }
+            }
+            if (fuelvalue > 50)
+            {
+                fuelvalue = 50;
+            }
+            else if (fuelvalue < 0)
+            {
+                fuelvalue = 0;
+            }
+            
+        }
+
+        
     }
 }
