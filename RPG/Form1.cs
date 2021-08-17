@@ -28,7 +28,6 @@ namespace RPG
         }
         System.Media.SoundPlayer beatit = new System.Media.SoundPlayer();
 
-        Label frontlabel = new Label();
         private void Exit_Click(object sender, EventArgs e)
         {
             Close();
@@ -43,13 +42,17 @@ namespace RPG
             clickenabled = true;
             Controls.Clear();
 
-            backlabel.Location = new System.Drawing.Point(1920 - (60 + 70 * 5), 60);
-            backlabel.Size = new Size(350, 23);
+            backlabel.Location = new System.Drawing.Point(1920 - (20 + 400), 20);
+            backlabel.Size = new Size(400, 40);
             backlabel.BackColor = Color.FromArgb(104, 104, 104);
+            backlabel.MouseDown += new MouseEventHandler(Form1_MouseDown);
+            backlabel.MouseUp += new MouseEventHandler(Form1_MouseUp);
 
-            this.label.Location = new System.Drawing.Point(1920 - (60 + 70 * 5), 60);
+            this.label.Location = new System.Drawing.Point(1920 - (20 + 400), 20);
+            label.Size = new Size(400, 40);
             label.BackColor = Color.FromArgb(0, 173, 255);
-            Controls.Add(frontlabel);
+            label.MouseDown += new MouseEventHandler(Form1_MouseDown);
+            label.MouseUp += new MouseEventHandler(Form1_MouseUp);
             Controls.Add(label);
             Controls.Add(backlabel);
             int y = 0;
@@ -57,13 +60,15 @@ namespace RPG
 
             Controls.Add(picture);
 
-            picture.MouseClick += new MouseEventHandler(Form1_MouseClick);
+            picture.MouseDown += new MouseEventHandler(Form1_MouseDown);
+            picture.MouseUp += new MouseEventHandler(Form1_MouseUp);
             picture.Width = 50;
             picture.Height = 20;
 
             Button map = new Button();
             Controls.Add(map);
-            map.MouseClick += new MouseEventHandler(Form1_MouseClick);
+            map.MouseDown += new MouseEventHandler(Form1_MouseDown);
+            map.MouseUp += new MouseEventHandler(Form1_MouseUp);
             map.Enabled = false;
             map.Visible = false;
             while (!levelLoader.EndOfStream)
@@ -96,7 +101,8 @@ namespace RPG
                         placeHolder.Name = name.ToString();
                         Controls.Add(placeHolder);
 
-                        placeHolder.MouseClick += new MouseEventHandler(Form1_MouseClick);
+                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
 
                         name++;
 
@@ -109,7 +115,8 @@ namespace RPG
                         player.Image = Image.FromFile(@"player\right\0.png");
                         Controls.Add(player);
 
-                        player.MouseClick += new MouseEventHandler(Form1_MouseClick);
+                        player.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                        player.MouseUp += new MouseEventHandler(Form1_MouseUp);
                         player.Top = y * 60;
                         player.Left = i * 60;
                         player.BackColor = Color.Transparent;
@@ -181,7 +188,8 @@ namespace RPG
                         placeHolder.BackgroundImage = Image.FromFile("wall.png");
 
                         Controls.Add(placeHolder);
-                        placeHolder.MouseClick += new MouseEventHandler(Form1_MouseClick);
+                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
                         placeHolder.Name = name.ToString();
 
                         name++;
@@ -260,16 +268,13 @@ namespace RPG
             
             hat.Tag = "bullet.map.wall";
             hat.Size = new Size(26, 13);
-            hat.Location = player.Location;
+            hat.Location = new Point(player.Left + (int)(player.Width / 2 - hat.Width / 2), player.Top + 4);
             hat.Visible = true;
             hat.Enabled = false;
             Controls.Add(hat);
         }
 
-        private void TITLE_Click(object sender, EventArgs e)
-        {
-
-        }
+        
         static int anim = 0;
         static bool up = false;
         static bool left = false;
@@ -278,8 +283,6 @@ namespace RPG
         static string dir = "";
         static bool bullet = false;
         static bool l = true;
-        static string locked = dir;
-        static string locked2 = locked;
 
         static bool jump = false;
 
@@ -420,10 +423,10 @@ namespace RPG
                     player.BackColor = Color.Transparent;
                 }
             }
-            else if (e.KeyCode == Keys.ShiftKey && fuelvalue != 0)
+            /*else if (e.KeyCode == Keys.ShiftKey && fuelvalue != 0)
             {
                 airwalk = true;
-            }
+            }*/
             else if (e.KeyCode == Keys.Space && OnPlatform() && !airwalk)
             {
                 jump = true;
@@ -531,10 +534,10 @@ namespace RPG
                     player.Image = Image.FromFile(@"player\right\0.png");
                 }
             }
-            else if (e.KeyCode == Keys.ShiftKey)
+            /*else if (e.KeyCode == Keys.ShiftKey)
             {
                 airwalk = false;
-            }
+            }*/
         }
         static int counter = 0;
         static int speedboom = 30;
@@ -715,12 +718,12 @@ namespace RPG
                 }
                 if (p)
                 {
-                    if (hat.Top == (player.Top + 15) || hat.Left == (player.Left + (player.Width / 2)))
+                    if (hat.Top == (player.Top + 4) || hat.Left == (player.Left + (player.Width / 2)))
                     {
                         if (hat.Left == (player.Left + (player.Width / 2)))
                         {
                             diry = 1;
-                            if (hat.Top > (player.Top + 15))
+                            if (hat.Top > (player.Top + 4))
                             {
                                 diry = -1;
                             }
@@ -736,9 +739,9 @@ namespace RPG
                     }
                     else
                     {
-                        float t = (float)Math.Abs(hat.Top - (player.Top + 15)) / (float)(Math.Abs(hat.Top - (player.Top + 15)) + (float)Math.Abs(hat.Left - (player.Left + (player.Width / 2))));
+                        float t = (float)Math.Abs(hat.Top - (player.Top + 4)) / (float)(Math.Abs(hat.Top - (player.Top + 4)) + (float)Math.Abs(hat.Left - (player.Left + (player.Width / 2))));
                         int a = 1;
-                        if (hat.Top > (player.Top + 15))
+                        if (hat.Top > (player.Top + 4))
                         {
                             a = -1;
                         }
@@ -811,11 +814,18 @@ namespace RPG
         int airSpeed = 21;
         int n = -1;
         int k = 0;
+
+
         private void AirTime_Tick(object sender, EventArgs e)
         {
+            if (debug)
+            {
+
+            }
             if (!airwalk && !f || fuelvalue < 1)
             {
                 k++;
+                fuelvalue--;
                 if (k == 10)
                 {
                     airwalk = false;
@@ -942,76 +952,32 @@ namespace RPG
         static float dirx;
         static float diry;
 
-        private void Form1_MouseClick(object sender, MouseEventArgs e)
-        {
-            
-            if (clickenabled)
-            {
-                clickenabled = false;
-                bullet = true;
-                if (MousePosition.Y == player.Top + (int)player.Height / 2 || MousePosition.X == player.Left + (int)player.Width / 2)
-                {
-                    if (MousePosition.X == player.Left + (int)player.Width / 2)
-                    {
-                        diry = 1;
-                        if (MousePosition.Y > player.Top + (int)player.Height / 2)
-                        {
-                            diry = -1;
-                        }
-                    }
-                    else
-                    {
-                        dirx = 1;
-                        if (MousePosition.X > player.Left + (int)player.Width / 2)
-                        {
-                            dirx = -1;
-                        }
-                    }
-                }
-                else
-                {
-                    float t = (float)Math.Abs(MousePosition.Y - (player.Top + (int)player.Height / 2)) / (float)(Math.Abs(MousePosition.Y - (player.Top + (int)player.Width / 2)) + (float)Math.Abs(MousePosition.X - (player.Left + (int)player.Width / 2)));
-                    int a = 1;
-                    if (MousePosition.Y < player.Top + (int)player.Height / 2)
-                    {
-                        a = -1;
-                    }
-                    diry = t * a;
-                    a = 1;
-                    if (MousePosition.X < player.Left + (int)player.Width / 2)
-                    {
-                        a = -1;
-                    }
-                    dirx = (1 - t) * a;
-                }
-            }
-        }
+        
 
         Label backlabel = new Label();
         Label label = new Label();
-        int fuelvalue = 50;
+        int fuelvalue = 100;
         int cooldown = 30;
         private void Fuel_Tick(object sender, EventArgs e)
         {
-            this.label.Width = fuelvalue * 7;
-            frontlabel.Text = fuelvalue.ToString();
+            this.label.Width = fuelvalue * 4;
             if (airwalk)
             {
-                fuelvalue --;
+                fuelvalue -= 2;
                 cooldown = 30;
             }
-            else if(fuelvalue < 50)
+            else if(fuelvalue < 100)
             {
                 cooldown--;
                 if (cooldown == 0)
                 {
-                    fuelvalue += 2;
+                    fuelvalue += 4;
                     cooldown++;
                 }
             }
-            if (fuelvalue > 50)
+            if (fuelvalue > 100)
             {
-                fuelvalue = 50;
+                fuelvalue = 100;
             }
             else if (fuelvalue < 0)
             {
@@ -1020,6 +986,65 @@ namespace RPG
             
         }
 
-        
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.XButton1 && fuelvalue != 0)
+            {
+                airwalk = true;
+                k = 0;
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                if (clickenabled)
+                {
+                    clickenabled = false;
+                    bullet = true;
+                    if (MousePosition.Y == player.Top + 4 || MousePosition.X == player.Left + (int)player.Width / 2)
+                    {
+                        if (MousePosition.X == player.Left + (int)player.Width / 2)
+                        {
+                            diry = 1;
+                            if (MousePosition.Y > player.Top + 4)
+                            {
+                                diry = -1;
+                            }
+                        }
+                        else
+                        {
+                            dirx = 1;
+                            if (MousePosition.X > player.Left + (int)player.Width / 2)
+                            {
+                                dirx = -1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        float t = (float)Math.Abs(MousePosition.Y - (player.Top + 4)) / (float)(Math.Abs(MousePosition.Y - (player.Top + (int)player.Width / 2)) + (float)Math.Abs(MousePosition.X - (player.Left + (int)player.Width / 2)));
+                        int a = 1;
+                        if (MousePosition.Y < player.Top + 4)
+                        {
+                            a = -1;
+                        }
+                        diry = t * a;
+                        a = 1;
+                        if (MousePosition.X < player.Left + (int)player.Width / 2)
+                        {
+                            a = -1;
+                        }
+                        dirx = (1 - t) * a;
+                    }
+                }
+            }
+        }
+
+        private void Form1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.XButton1)
+            {
+                airwalk = false;
+                k = 0;
+            }
+        }
     }
 }
