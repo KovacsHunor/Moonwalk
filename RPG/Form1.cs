@@ -263,7 +263,7 @@ namespace RPG
         }
         static bool p = false;
         static PictureBox hat = new PictureBox();
-        private void bumerang()
+        private void boomerang()
         {
             
             hat.Tag = "bullet.map.wall";
@@ -391,6 +391,7 @@ namespace RPG
             }
         }
         bool s = true;
+        bool keydown = false;
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.A)
@@ -427,7 +428,7 @@ namespace RPG
             {
                 airwalk = true;
             }*/
-            else if (e.KeyCode == Keys.Space && OnPlatform() && !airwalk)
+            else if (e.KeyCode == Keys.Space && OnPlatform() && !airwalk && !keydown)
             {
                 jump = true;
                 once = true;
@@ -437,6 +438,7 @@ namespace RPG
                     Controls.Remove(air);
                     s = false;
                 }
+                keydown = !keydown;
             }
            
             else if (e.KeyCode == Keys.B)
@@ -533,6 +535,10 @@ namespace RPG
                 {
                     player.Image = Image.FromFile(@"player\right\0.png");
                 }
+            }
+            else if (e.KeyCode == Keys.Space && keydown)
+            {
+                keydown = !keydown;
             }
             /*else if (e.KeyCode == Keys.ShiftKey)
             {
@@ -713,7 +719,7 @@ namespace RPG
                 }
                 if (l)
                 {
-                    bumerang();
+                    boomerang();
                     l = false;
                 }
                 if (p)
@@ -817,11 +823,7 @@ namespace RPG
 
 
         private void AirTime_Tick(object sender, EventArgs e)
-        {
-            if (debug)
-            {
-
-            }
+        { 
             if (!airwalk && !f || fuelvalue < 1)
             {
                 k++;
@@ -834,7 +836,7 @@ namespace RPG
                     k = 0;
                 }
             }
-            if (airwalk && !f)
+            if (airwalk && !f  && fuelvalue > 0)
             {
                 jump = false;
             }
@@ -854,8 +856,12 @@ namespace RPG
                     jump = true;
                     airSpeed = 0;
                 }
-                if (airwalk && f && jump)
+                if (airwalk && f && jump && fuelvalue > 0)
                 {
+                    if (debug)
+                    {
+
+                    }
                     Controls.Add(air);
                     f = false;
                     jump = false;
@@ -988,7 +994,7 @@ namespace RPG
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.XButton1 && fuelvalue != 0)
+            if (e.Button == MouseButtons.XButton1 && fuelvalue > 0)
             {
                 airwalk = true;
                 k = 0;
@@ -1042,6 +1048,10 @@ namespace RPG
         {
             if (e.Button == MouseButtons.XButton1)
             {
+                if (debug)
+                     {
+
+                }
                 airwalk = false;
                 k = 0;
             }
