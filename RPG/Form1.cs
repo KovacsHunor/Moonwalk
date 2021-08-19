@@ -36,25 +36,69 @@ namespace RPG
         static bool begin = false;
         PictureBox picture = new PictureBox();
         static bool clickenabled = false;
+        PictureBox heart1 = new PictureBox();
+        PictureBox heart2 = new PictureBox();
+        PictureBox heart3 = new PictureBox();
+        PictureBox heart4 = new PictureBox();
+        
         private void Start_Click(object sender, EventArgs e)
         {
             label.Visible = true;
             clickenabled = true;
             Controls.Clear();
+            Controls.Add(heart1);
+            heart1.BackColor = Color.LightGray;
+            Controls.Add(heart2);
+            heart2.BackColor = Color.LightGray;
+            Controls.Add(heart3);
+            heart3.BackColor = Color.LightGray;
+            Controls.Add(heart4);
+            heart4.BackColor = Color.LightGray;
+            heart1.Location = new Point(1920 - (20 + 260), 20);
+            heart2.Location = new Point(1920 - (20 + 190), 20);
+            heart3.Location = new Point(1920 - (20 + 120), 20);
+            heart4.Location = new Point(1920 - (20 + 50), 20);
+            heart1.Size = new Size(50, 50);
+            heart2.Size = new Size(50, 50);
+            heart3.Size = new Size(50, 50);
+            heart4.Size = new Size(50, 50);
 
-            backlabel.Location = new System.Drawing.Point(1920 - (20 + 400), 20);
-            backlabel.Size = new Size(400, 40);
+            heart1.Image = Image.FromFile(@"heart\0.png");
+            heart2.Image = Image.FromFile(@"heart\0.png");
+            heart3.Image = Image.FromFile(@"heart\0.png");
+            heart4.Image = Image.FromFile(@"heart\0.png");
+
+            heart1.MouseDown += new MouseEventHandler(Form1_MouseDown);
+            heart1.MouseUp += new MouseEventHandler(Form1_MouseUp);
+            heart2.MouseDown += new MouseEventHandler(Form1_MouseDown);
+            heart2.MouseUp += new MouseEventHandler(Form1_MouseUp); 
+            heart3.MouseDown += new MouseEventHandler(Form1_MouseDown);
+            heart3.MouseUp += new MouseEventHandler(Form1_MouseUp); 
+            heart4.MouseDown += new MouseEventHandler(Form1_MouseDown);
+            heart4.MouseUp += new MouseEventHandler(Form1_MouseUp);
+
+            heart1.Tag = "1.full";
+            heart2.Tag = "2.full";
+            heart3.Tag = "3.full";
+            heart4.Tag = "4.full";
+           
+            backlabel.Location = new Point(1920 - (20 + 260), 80);
+            backlabel.Size = new Size(260, 10);
             backlabel.BackColor = Color.FromArgb(104, 104, 104);
             backlabel.MouseDown += new MouseEventHandler(Form1_MouseDown);
             backlabel.MouseUp += new MouseEventHandler(Form1_MouseUp);
-
-            this.label.Location = new System.Drawing.Point(1920 - (20 + 400), 20);
-            label.Size = new Size(400, 40);
+            
+            label.Location = new Point(1920 - (20 + 260), 80);
+            label.Size = new Size(260, 10);
             label.BackColor = Color.FromArgb(0, 173, 255);
             label.MouseDown += new MouseEventHandler(Form1_MouseDown);
             label.MouseUp += new MouseEventHandler(Form1_MouseUp);
             Controls.Add(label);
             Controls.Add(backlabel);
+            whitebackground.Location = new Point(1920 - (20 + 275), 5);
+            whitebackground.Size = new Size(290, 100);
+            whitebackground.BackColor = Color.LightGray;
+            Controls.Add(whitebackground);
             int y = 0;
             StreamReader levelLoader = new StreamReader("level0.txt");
 
@@ -71,8 +115,10 @@ namespace RPG
             map.MouseUp += new MouseEventHandler(Form1_MouseUp);
             map.Enabled = false;
             map.Visible = false;
+
             while (!levelLoader.EndOfStream)
             {
+                
                 string line = levelLoader.ReadLine();
                 for (int i = 0; i < line.Length; i++)
                 {
@@ -86,7 +132,13 @@ namespace RPG
                         w = true;
                         n++;
                         i++;
+                       
                         if (i == line.Length)
+                        {
+                            i--;
+                            break;
+                        }
+                        else if (line[i] != 'w')
                         {
                             i--;
                             break;
@@ -121,8 +173,46 @@ namespace RPG
                         player.Left = i * 60;
                         player.BackColor = Color.Transparent;
                     }
-                    placeHolder.Top = y * scale + 40;
-                    placeHolder.Left = oi * scale;
+                    else if (line[i] == 'b')
+                    {
+                        placeHolder.Size = new Size(60, 60);
+                        placeHolder.Tag = "button.wall.map" + (y + 1) + "." + (i + 1);
+                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                        placeHolder.BackColor = Color.Green;
+                        placeHolder.Visible = true;
+                        Controls.Add(placeHolder);
+                    }
+                    else if (line[i] == 'x')
+                    {
+                        placeHolder.Size = new Size(60, 60);
+                        placeHolder.Tag = "danger.wall.map" + (y + 1) + "." + (i + 1);
+                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                        placeHolder.BackColor = Color.Red;
+                        placeHolder.Visible = true;
+                        Controls.Add(placeHolder);
+                    }
+                    else if (line[i] == 'd')
+                    {
+                        placeHolder.Size = new Size(60, 120);
+                        placeHolder.Tag = "door.wall.map" + (y + 1) + "." + (i + 1);
+                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                        placeHolder.BackColor = Color.Brown;
+                        placeHolder.Visible = true;
+                        Controls.Add(placeHolder);
+                    }
+                    if (n > 1)
+                    {
+                        placeHolder.Top = y * scale + 40;
+                        placeHolder.Left = oi * scale;
+                    }
+                    else
+                    {
+                        placeHolder.Top = y * scale + 40;
+                        placeHolder.Left = i * scale;
+                    }
 
                 }
                 y++;
@@ -195,7 +285,7 @@ namespace RPG
                         name++;
 
                     }
-                    placeHolder.Top = (int)((oi + 0.66667) * scale);
+                    placeHolder.Top = oi * scale + 40;
                     placeHolder.Left = y * scale;
                 }
                 y++;
@@ -203,8 +293,8 @@ namespace RPG
 
             Console.ReadLine();
             int[] vari = new int[2];
-            vari[0] = (int)(this.Width / 2 - player.Width / 2) - player.Left;
-            vari[1] = (int)(this.Height * 2 / 3 - player.Height / 2) - player.Top;
+            vari[0] = (int)(Width / 2 - player.Width / 2) - player.Left;
+            vari[1] = (int)(Height * 2 / 3 - player.Height / 2) - player.Top;
 
             foreach (Control x in Controls)
             {
@@ -234,8 +324,6 @@ namespace RPG
         {
 
         }
-        static bool upb = true;
-        static bool downb = true;
         static bool rightb = true;
         static bool leftb = true;
         private void Options_Click(object sender, EventArgs e)
@@ -261,12 +349,11 @@ namespace RPG
             Controls.Add(Options);
             Controls.Add(Exit);
         }
-        static bool p = false;
         static PictureBox hat = new PictureBox();
         private void boomerang()
         {
             
-            hat.Tag = "bullet.map.wall";
+            hat.Tag = "bullet.map";
             hat.Size = new Size(26, 13);
             hat.Location = new Point(player.Left + (int)(player.Width / 2 - hat.Width / 2), player.Top + 4);
             hat.Visible = true;
@@ -276,9 +363,7 @@ namespace RPG
 
         
         static int anim = 0;
-        static bool up = false;
         static bool left = false;
-        static bool down = false;
         static bool right = false;
         static string dir = "";
         static bool bullet = false;
@@ -289,32 +374,56 @@ namespace RPG
         PictureBox air = new PictureBox();
 
         bool f = true;
+        int healthprev = 4;
+        int health = 4;
         private void timer1_Tick(object sender, EventArgs e)
+        {
+            dangercooldown++;
+            foreach (Control x in Controls)
             {
-            
-            if (upb && up && !down)
-            {
-                foreach (Control x in Controls)
+                if (x.Tag != null)
                 {
-                    if (x.Tag != null)
+                    if (x.Tag.ToString().Contains("wall") && x.Left < player.Right && x.Right > player.Left && player.Bottom == x.Top)
                     {
-                        if (x.Tag.ToString().Contains("map"))
+                        if (x.Tag.ToString().Contains("danger") && dangercooldown > 100)
                         {
-                            x.Top += speed;
+                            health--;
+                            dangercooldown = 0;
                         }
                     }
                 }
             }
-            if (downb && down && !up)
+            foreach (Control x in Controls)
             {
-                foreach (Control x in Controls)
+                if (x.Tag != null)
                 {
-                    if (x.Tag != null)
+                    if (x.Tag.ToString().Contains("button"))
                     {
-                        if (x.Tag.ToString().Contains("map"))
+                        if (((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Left <= hat.Right + (int)(dirx * speedboom)) && x.Left >= hat.Right))
                         {
-                            x.Top -= speed;
+                            StreamReader sr = new StreamReader("button-door.txt");
+                            while (!sr.EndOfStream)
+                            {
+                                string[] line = sr.ReadLine().Split();
+                                if (int.Parse(line[0]) == x.Top / scale && int.Parse(line[1]) == x.Left / scale)
+                                {
+                                    foreach (Control y in Controls)
+                                    {
+                                        if (y.Tag != null)
+                                        {
+                                            if (y.Tag.ToString().Contains("door"))
+                                            {
+                                                if (int.Parse(line[2]) == y.Top / scale && int.Parse(line[3]) == y.Left / scale)
+                                                {
+                                                    y.Visible = false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
+                       
                     }
                 }
             }
@@ -346,11 +455,9 @@ namespace RPG
                 }
 
             }
-            upb = true;
-            downb = true;
             rightb = true;
             leftb = true;
-
+            
             foreach (Control x in this.Controls)
             {
                 if (x.Tag != null)
@@ -386,6 +493,7 @@ namespace RPG
                                 }
                             }
                         }
+
                     }
                 }
             }
@@ -443,6 +551,7 @@ namespace RPG
            
             else if (e.KeyCode == Keys.B)
             {
+                
                 if (debug)
                 {
                     debug = false;
@@ -460,6 +569,8 @@ namespace RPG
         bool OnPlatform()
         {
             bool plat = false;
+
+            Controls.Add(picture);
             foreach (Control x in Controls)
             {
                 if (x.Tag != null)
@@ -471,14 +582,18 @@ namespace RPG
                             s = true;
                         }
                         plat = true;
+                        Controls.Remove(picture);
                     }
                 }
             }
             return plat;
         }
+        int dangercooldown = 100;
         bool OnPlatform(int i)
         {
-            bool plat = false;
+            bool plat = true;
+            
+            Controls.Add(picture);
             foreach (Control x in Controls)
             {
                 if (x.Tag != null)
@@ -488,7 +603,9 @@ namespace RPG
                         if (!x.Tag.ToString().Contains("map"))
                         {
                             plat = true;
+                            Controls.Remove(picture);
                         }
+                        
                     }
                 }
             }
@@ -501,9 +618,16 @@ namespace RPG
             {
                 if (x.Tag != null)
                 {
-                    if (x.Tag.ToString().Contains("wall") && x.Left < player.Right && x.Right > player.Left && player.Top == x.Bottom)
+                    if (x.Left < player.Right && x.Right > player.Left && player.Top == x.Bottom)
                     {
-                        hit = true;
+                        if (x.Tag.ToString().Contains("wall"))
+                        {
+                            hit = true;
+                        }
+                        if (true)
+                        {
+
+                        }
                     }
                 }
             }
@@ -512,21 +636,13 @@ namespace RPG
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.W)
-            {
-                up = false;
-            }
-            else if (e.KeyCode == Keys.A)
+            if (e.KeyCode == Keys.A)
             {
                 left = false;
                 if (!jump && !right)
                 {
                     player.Image = Image.FromFile(@"player\left\0.png");
                 }
-            }
-            else if (e.KeyCode == Keys.S)
-            {
-                down = false;
             }
             else if (e.KeyCode == Keys.D)
             {
@@ -540,10 +656,12 @@ namespace RPG
             {
                 keydown = !keydown;
             }
-            /*else if (e.KeyCode == Keys.ShiftKey)
+            else if (e.KeyCode == Keys.B)
             {
-                airwalk = false;
-            }*/
+                health++;
+                
+
+            }
         }
         static int counter = 0;
         static int speedboom = 30;
@@ -561,6 +679,33 @@ namespace RPG
                     {
                         if ((x.Left < hat.Right + (int)(dirx * speedboom) && x.Right > hat.Left + (int)(dirx * speedboom)) && (x.Bottom >= hat.Top + (int)(diry * speedboom)) && x.Bottom <= hat.Top)
                         {
+                            counter++;
+                            if (x.Tag.ToString().Contains("button"))
+                            {
+                                StreamReader sr = new StreamReader("button-door.txt");
+                                while (!sr.EndOfStream)
+                                {
+                                    string[] line = sr.ReadLine().Split();
+                                    if (x.Tag.ToString().Contains(line[0] + "." + line[1]))
+                                    {
+                                        foreach (Control y in Controls)
+                                        {
+                                            if (y.Tag != null)
+                                            {
+                                                if (y.Tag.ToString().Contains("door"))
+                                                {
+                                                    if (y.Tag.ToString().Contains(line[2] + "." + line[3]))
+                                                    {
+                                                        Controls.Remove(y);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                sr.Close();
+                            }
+                           
                             foreach (Control y in Controls)
                             {
                                 if (y.Tag != null)
@@ -570,6 +715,7 @@ namespace RPG
                                         if ((y.Top < hat.Bottom + (int)((x.Bottom - hat.Top) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Bottom - hat.Top) / dirx * diry)) && (y.Right >= hat.Left + (int)((x.Bottom - hat.Top) / diry * dirx)) && y.Right <= hat.Left)
                                         {
                                             hat.Left = y.Right;
+                                            counter++;
                                             dirx = dirx * -1;
                                             ELSE = false;
                                         }
@@ -577,6 +723,7 @@ namespace RPG
                                         {
                                             hat.Left = y.Left - hat.Width;
                                             dirx = dirx * -1;
+                                            counter++;
                                             ELSE = false;
                                         }
                                     }
@@ -592,6 +739,32 @@ namespace RPG
                         }
                         if ((x.Left < hat.Right + (int)(dirx * speedboom) && x.Right > hat.Left + (int)(dirx * speedboom)) && (x.Top <= hat.Bottom + (int)(diry * speedboom)) && x.Top >= hat.Bottom)
                         {
+                            counter++;
+                            if (x.Tag.ToString().Contains("button"))
+                            {
+                                StreamReader sr = new StreamReader("button-door.txt");
+                                while (!sr.EndOfStream)
+                                {
+                                    string[] line = sr.ReadLine().Split();
+                                    if (x.Tag.ToString().Contains(line[0] + "." + line[1]))
+                                    {
+                                        foreach (Control y in Controls)
+                                        {
+                                            if (y.Tag != null)
+                                            {
+                                                if (y.Tag.ToString().Contains("door"))
+                                                {
+                                                    if (y.Tag.ToString().Contains(line[2] + "." + line[3]))
+                                                    {
+                                                        Controls.Remove(y);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                sr.Close();
+                            }
                             foreach (Control y in Controls)
                             {
                                 if (y.Tag != null)
@@ -601,6 +774,7 @@ namespace RPG
                                         if ((y.Top < hat.Bottom + (int)((x.Top - hat.Bottom) / dirx * diry) && y.Bottom > hat.Top + (int)((x.Top - hat.Bottom) / dirx * diry)) && (y.Right >= hat.Left + (int)((x.Top - hat.Bottom) / diry * dirx)) && y.Right <= hat.Left)
                                         {
                                             hat.Left = y.Right;
+                                            counter++;
                                             dirx = dirx * -1;
                                             ELSE = false;
                                         }
@@ -608,6 +782,7 @@ namespace RPG
                                         {
                                             hat.Left = y.Left - hat.Width;
                                             dirx = dirx * -1;
+                                            counter++;
                                             ELSE = false;
                                         }
                                     }
@@ -623,6 +798,32 @@ namespace RPG
                         }
                         if ((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Right >= hat.Left + (int)(dirx * speedboom)) && x.Right <= hat.Left)
                         {
+                            counter++;
+                            if (x.Tag.ToString().Contains("button"))
+                            {
+                                StreamReader sr = new StreamReader("button-door.txt");
+                                while (!sr.EndOfStream)
+                                {
+                                    string[] line = sr.ReadLine().Split();
+                                    if (x.Tag.ToString().Contains(line[0] + "." + line[1]))
+                                    {
+                                        foreach (Control y in Controls)
+                                        {
+                                            if (y.Tag != null)
+                                            {
+                                                if (y.Tag.ToString().Contains("door"))
+                                                {
+                                                    if (y.Tag.ToString().Contains(line[2] + "." + line[3]))
+                                                    {
+                                                        Controls.Remove(y);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                sr.Close();
+                            }
                             foreach (Control y in Controls)
                             {
                                 if (y.Tag != null)
@@ -633,12 +834,14 @@ namespace RPG
                                         {
                                             hat.Top = y.Bottom;
                                             diry = diry * -1;
+                                            counter++;
                                             ELSE = false;
                                         }
                                         else if ((y.Left < hat.Right + (int)((x.Right - hat.Left) / diry * dirx) && y.Right > hat.Left + (int)((x.Right - hat.Left) / diry * dirx)) && (y.Top <= hat.Bottom + (int)((x.Right - hat.Left) / dirx * diry)/**/) && y.Top >= hat.Bottom)
                                         {
                                             hat.Top = y.Top - hat.Height;
                                             diry = diry * -1;
+                                            counter++;
                                             ELSE = false;
                                         }
                                     }
@@ -654,7 +857,32 @@ namespace RPG
                         }
                         if ((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Left <= hat.Right + (int)(dirx * speedboom)) && x.Left >= hat.Right)
                         {
-                            
+                            counter++;
+                            if (x.Tag.ToString().Contains("button"))
+                            {
+                                StreamReader sr = new StreamReader("button-door.txt");
+                                while (!sr.EndOfStream)
+                                {
+                                    string[] line = sr.ReadLine().Split();
+                                    if (x.Tag.ToString().Contains(line[0] + "." + line[1]))
+                                    {
+                                        foreach (Control y in Controls)
+                                        {
+                                            if (y.Tag != null)
+                                            {
+                                                if (y.Tag.ToString().Contains("door"))
+                                                {
+                                                    if (y.Tag.ToString().Contains(line[2] + "." + line[3]))
+                                                    {
+                                                        Controls.Remove(y);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                sr.Close();
+                            }
                             foreach (Control y in Controls)
                             {
                                 if (y.Tag != null)
@@ -669,12 +897,14 @@ namespace RPG
                                         {
                                             hat.Top = y.Bottom;
                                             diry = diry * -1;
+                                            counter++;
                                             ELSE = false;
                                         }
                                         else if ((y.Left < hat.Right + (int)((x.Left - hat.Right) / diry * dirx) && y.Right > hat.Left + (int)((x.Left - hat.Right) / diry * dirx)) && (y.Top <= hat.Bottom + (int)((x.Left - hat.Right) / dirx * diry)/**/) && y.Top >= hat.Bottom)
                                         {
                                             hat.Top = y.Top - hat.Height;
                                             diry = diry * -1;
+                                            counter++;
                                             ELSE = false;
                                         }
                                     }
@@ -708,7 +938,7 @@ namespace RPG
                 }                
 
 
-                if (move || p)
+                if (move || counter == 20)
                 {
                     hat.Top += (int)(diry * speedboom);
                     hat.Left += (int)(dirx * speedboom);
@@ -722,73 +952,19 @@ namespace RPG
                     boomerang();
                     l = false;
                 }
-                if (p)
+                if (counter == 20)
                 {
-                    if (hat.Top == (player.Top + 4) || hat.Left == (player.Left + (player.Width / 2)))
-                    {
-                        if (hat.Left == (player.Left + (player.Width / 2)))
-                        {
-                            diry = 1;
-                            if (hat.Top > (player.Top + 4))
-                            {
-                                diry = -1;
-                            }
-                        }
-                        else
-                        {
-                            dirx = 1;
-                            if (hat.Left > (player.Left + (player.Width / 2)))
-                            {
-                                dirx = -1;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        float t = (float)Math.Abs(hat.Top - (player.Top + 4)) / (float)(Math.Abs(hat.Top - (player.Top + 4)) + (float)Math.Abs(hat.Left - (player.Left + (player.Width / 2))));
-                        int a = 1;
-                        if (hat.Top > (player.Top + 4))
-                        {
-                            a = -1;
-                        }
-                        diry = t * a;
-                        a = 1;
-                        if (hat.Left > (player.Left + (player.Width / 2)))
-                        {
-                            a = -1;
-                        }
-                        dirx = (1 - t) * a;
-                    }
-
-
-                    if (hat.Bounds.IntersectsWith(player.Bounds))
-                    {
-                        counter++;
-                        if (counter == 5)
-                        {
-                            p = false;
-                            l = true;
-                            counter = 0;
-                        }
-                    }
-                }
-                if (l)
-                {
+                    l = true;
+                    counter = 0;
                     bullet = false;
                     hat.Visible = false;
                     Controls.Remove(hat);
-                }
-
-                if (!p)
-                {
-                    counter++;
-                }
-                if (counter == 100)
-                {
                     clickenabled = true;
-                    p = true;
-                    counter = 0;
                 }
+               
+
+                
+                
             }
         }
 
@@ -958,15 +1134,15 @@ namespace RPG
         static float dirx;
         static float diry;
 
-        
 
+        Label whitebackground = new Label();
         Label backlabel = new Label();
         Label label = new Label();
         int fuelvalue = 100;
         int cooldown = 30;
         private void Fuel_Tick(object sender, EventArgs e)
         {
-            this.label.Width = fuelvalue * 4;
+            this.label.Width = (int)(fuelvalue * 2.6);
             if (airwalk)
             {
                 fuelvalue -= 2;
@@ -998,6 +1174,10 @@ namespace RPG
             {
                 airwalk = true;
                 k = 0;
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                counter = 20;
             }
             else if (e.Button == MouseButtons.Left)
             {
@@ -1055,6 +1235,126 @@ namespace RPG
                 airwalk = false;
                 k = 0;
             }
+        }
+
+        int h1 = 0;
+        int h2 = 0;
+        int h3 = 0;
+        int h4 = 0;
+
+        bool a1 = false;
+        bool a2 = false;
+        bool a3 = false;
+        bool a4 = false;
+        private void Heart_Tick(object sender, EventArgs e)
+        {
+            if (health == 4)
+            {
+                heart4.Tag = "4.full";
+                healthprev = 4;
+                heart4.Image = Image.FromFile(@"heart\" + 0 + ".png");
+                h4 = 0;
+            }
+            if (health == 3)
+            {
+                if (healthprev == 4)
+                {
+                    a4 = true;
+                    
+                }
+                else
+                {
+                    heart3.Tag = "3.full";
+                    heart3.Image = Image.FromFile(@"heart\" + 0 + ".png");
+                    healthprev = 3;
+                    h3 = 0;
+                }
+                if (a4)
+                {
+                    healthprev = 3;
+                    heart4.Tag = "4.damaged";
+                    if (h4 < 20)
+                    {
+                        h4++;
+                        heart4.Image = Image.FromFile(@"heart\" + h4 + ".png");
+                    }
+                }
+                
+                
+            }
+            if (health == 2)
+            {
+                if (healthprev == 3)
+                {
+                    a3 = true;
+
+                }
+                else
+                {
+                    heart2.Tag = "2.full";
+                    heart2.Image = Image.FromFile(@"heart\" + 0 + ".png");
+                    healthprev = 2;
+                    h2 = 0;
+                }
+                if (a3)
+                {
+                    healthprev = 2;
+                    heart3.Tag = "3.damaged";
+                    if (h3 < 20)
+                    {
+                        h3++;
+                        heart3.Image = Image.FromFile(@"heart\" + h3 + ".png");
+                    }
+                    else
+                    {
+                        a3 = false;
+                    }
+                }
+            }
+            if (health == 1)
+            {
+                if (healthprev == 2)
+                {
+                    a2 = true;
+
+                }
+                else
+                {
+                    heart1.Tag = "1.full";
+                    heart1.Image = Image.FromFile(@"heart\" + 0 + ".png");
+                    healthprev = 1;
+                    h1 = 0;
+                }
+                if (a2)
+                {
+                    healthprev = 1;
+                    heart2.Tag = "2.damaged";
+                    if (h2 < 20)
+                    {
+                        h2++;
+                        heart2.Image = Image.FromFile(@"heart\" + h2 + ".png");
+                    }
+                    else
+                    {
+                        a2 = false;
+
+                    }
+                }
+            }
+            if (health == 0)
+            {
+                heart1.Tag = "1.damaged";
+                if (h1 < 20)
+                {
+                    h1++;
+                    heart1.Image = Image.FromFile(@"heart\" + h1 + ".png");
+                }
+                else
+                {
+                    healthprev = 0;
+                }
+            }
+               
         }
     }
 }

@@ -43,6 +43,7 @@ namespace RPG
             this.jumptimer = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Fuel = new System.Windows.Forms.Timer(this.components);
+            this.Heart = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -121,6 +122,12 @@ namespace RPG
             this.Fuel.Interval = 10;
             this.Fuel.Tick += new System.EventHandler(this.Fuel_Tick);
             // 
+            // Heart
+            // 
+            this.Heart.Enabled = true;
+            this.Heart.Interval = 70;
+            this.Heart.Tick += new System.EventHandler(this.Heart_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -152,6 +159,7 @@ namespace RPG
         private System.Windows.Forms.Timer jumptimer;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Timer Fuel;
+        private System.Windows.Forms.Timer Heart;
     }
 }
 
