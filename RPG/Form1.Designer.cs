@@ -44,6 +44,7 @@ namespace RPG
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Fuel = new System.Windows.Forms.Timer(this.components);
             this.Heart = new System.Windows.Forms.Timer(this.components);
+            this.Fallingdamage = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -128,6 +129,12 @@ namespace RPG
             this.Heart.Interval = 70;
             this.Heart.Tick += new System.EventHandler(this.Heart_Tick);
             // 
+            // Fallingdamage
+            // 
+            this.Fallingdamage.Enabled = true;
+            this.Fallingdamage.Interval = 10;
+            this.Fallingdamage.Tick += new System.EventHandler(this.Fallingdamage_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -139,7 +146,6 @@ namespace RPG
             this.Controls.Add(this.Start);
             this.Name = "Form1";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
@@ -160,6 +166,7 @@ namespace RPG
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Timer Fuel;
         private System.Windows.Forms.Timer Heart;
+        private System.Windows.Forms.Timer Fallingdamage;
     }
 }
 

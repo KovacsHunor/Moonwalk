@@ -23,7 +23,7 @@ namespace RPG
             WindowState = FormWindowState.Maximized;
             InitializeComponent();
             beatit.SoundLocation = "beat.wav";
-            beatit.PlayLooping();
+          //  beatit.PlayLooping();
            
         }
         System.Media.SoundPlayer beatit = new System.Media.SoundPlayer();
@@ -43,6 +43,8 @@ namespace RPG
         
         private void Start_Click(object sender, EventArgs e)
         {
+            
+            healthlist.Add(false);
             label.Visible = true;
             clickenabled = true;
             Controls.Clear();
@@ -171,7 +173,19 @@ namespace RPG
                         player.MouseUp += new MouseEventHandler(Form1_MouseUp);
                         player.Top = y * 60;
                         player.Left = i * 60;
+                        
                         player.BackColor = Color.Transparent;
+                    }
+                    else if (line[i] == 'h')
+                    {
+
+                        placeHolder.Size = new Size(scale, scale);
+                        placeHolder.Tag = "health.wall.map";
+                        placeHolder.BackgroundImage = Image.FromFile("wall.png");
+                        Controls.Add(placeHolder);
+
+                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
                     }
                     else if (line[i] == 'b')
                     {
@@ -320,10 +334,7 @@ namespace RPG
         }
 
         static int name = 0;
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
+        
         static bool rightb = true;
         static bool leftb = true;
         private void Options_Click(object sender, EventArgs e)
@@ -339,8 +350,22 @@ namespace RPG
             back.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             back.Text = "Back To The Menu";
             Controls.Add(back);
-        }
 
+            Button mute = new Button();
+            mute.Click += mute_Click;
+            mute.Left = 880;
+            mute.Top = 460;
+            mute.Visible = true;
+            mute.Size = new Size(200, 50);
+            mute.UseVisualStyleBackColor = true;
+            mute.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            mute.Text = "Mute";
+            Controls.Add(mute);
+        }
+        private void mute_Click(object sender, EventArgs e)
+        {
+            beatit.Stop();
+        }
         private void back_Click(object sender, EventArgs e)
         {
             Controls.Clear();
@@ -376,57 +401,37 @@ namespace RPG
         bool f = true;
         int healthprev = 4;
         int health = 4;
+        List<bool> healthlist = new List<bool>(); 
+
         private void timer1_Tick(object sender, EventArgs e)
         {
+           
             dangercooldown++;
+            
+            
+           
             foreach (Control x in Controls)
             {
                 if (x.Tag != null)
                 {
                     if (x.Tag.ToString().Contains("wall") && x.Left < player.Right && x.Right > player.Left && player.Bottom == x.Top)
                     {
-                        if (x.Tag.ToString().Contains("danger") && dangercooldown > 100)
+                        if (x.Tag.ToString().Contains("danger") && dangercooldown > 200 && health != 0)
                         {
                             health--;
                             dangercooldown = 0;
                         }
-                    }
-                }
-            }
-            foreach (Control x in Controls)
-            {
-                if (x.Tag != null)
-                {
-                    if (x.Tag.ToString().Contains("button"))
-                    {
-                        if (((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Left <= hat.Right + (int)(dirx * speedboom)) && x.Left >= hat.Right))
+                        if (x.Tag.ToString().Contains("health") && healthlist[0] == false)
                         {
-                            StreamReader sr = new StreamReader("button-door.txt");
-                            while (!sr.EndOfStream)
-                            {
-                                string[] line = sr.ReadLine().Split();
-                                if (int.Parse(line[0]) == x.Top / scale && int.Parse(line[1]) == x.Left / scale)
-                                {
-                                    foreach (Control y in Controls)
-                                    {
-                                        if (y.Tag != null)
-                                        {
-                                            if (y.Tag.ToString().Contains("door"))
-                                            {
-                                                if (int.Parse(line[2]) == y.Top / scale && int.Parse(line[3]) == y.Left / scale)
-                                                {
-                                                    y.Visible = false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            health++;
+                            healthlist[0] = true;
                         }
-                       
                     }
+                    
                 }
             }
+            
+           
             if (leftb && left && !right)
             {
 
@@ -558,6 +563,7 @@ namespace RPG
                 }
                 else
                 {
+                    
                     debug = true;
                 }
             }
@@ -588,7 +594,7 @@ namespace RPG
             }
             return plat;
         }
-        int dangercooldown = 100;
+        int dangercooldown = 200;
         bool OnPlatform(int i)
         {
             bool plat = true;
@@ -658,7 +664,7 @@ namespace RPG
             }
             else if (e.KeyCode == Keys.B)
             {
-                health++;
+                
                 
 
             }
@@ -668,6 +674,7 @@ namespace RPG
         static int hatspin = 0;
         public bool ELSE;
         public bool move = true;
+       
         private void Boomerang_Tick(object sender, EventArgs e)
         {
             foreach (Control x in Controls)
@@ -1229,7 +1236,7 @@ namespace RPG
             if (e.Button == MouseButtons.XButton1)
             {
                 if (debug)
-                     {
+                {
 
                 }
                 airwalk = false;
@@ -1242,10 +1249,26 @@ namespace RPG
         int h3 = 0;
         int h4 = 0;
 
-        bool a1 = false;
         bool a2 = false;
         bool a3 = false;
         bool a4 = false;
+        int fall = 0;
+        private void Fallingdamage_Tick(object sender, EventArgs e)
+        {
+            if (!OnPlatform())
+            {
+                fall++;
+            }
+            else
+            {
+                fall = 0;
+            }
+            if (fall == 100)
+            {
+                health--;
+                fall = 0;
+            }
+        }
         private void Heart_Tick(object sender, EventArgs e)
         {
             if (health == 4)
@@ -1260,7 +1283,7 @@ namespace RPG
                 if (healthprev == 4)
                 {
                     a4 = true;
-                    
+
                 }
                 else
                 {
@@ -1279,8 +1302,8 @@ namespace RPG
                         heart4.Image = Image.FromFile(@"heart\" + h4 + ".png");
                     }
                 }
-                
-                
+
+
             }
             if (health == 2)
             {
@@ -1354,7 +1377,7 @@ namespace RPG
                     healthprev = 0;
                 }
             }
-               
+
         }
     }
 }
