@@ -23,7 +23,7 @@ namespace RPG
             WindowState = FormWindowState.Maximized;
             InitializeComponent();
             beatit.SoundLocation = "beat.wav";
-          //  beatit.PlayLooping();
+            beatit.PlayLooping();
            
         }
         System.Media.SoundPlayer beatit = new System.Media.SoundPlayer();
@@ -40,6 +40,7 @@ namespace RPG
         PictureBox heart2 = new PictureBox();
         PictureBox heart3 = new PictureBox();
         PictureBox heart4 = new PictureBox();
+        
         
         private void Start_Click(object sender, EventArgs e)
         {
@@ -401,8 +402,10 @@ namespace RPG
         bool f = true;
         int healthprev = 4;
         int health = 4;
-        List<bool> healthlist = new List<bool>(); 
-
+        List<bool> healthlist = new List<bool>();
+        int deltaleft = 0;
+        int deltatop = 0;
+        bool skip = false;
         private void timer1_Tick(object sender, EventArgs e)
         {
            
@@ -442,9 +445,16 @@ namespace RPG
                         if (x.Tag.ToString().Contains("map"))
                         {
                             x.Left += speed;
+                            if (!skip)
+                            {
+
+                                deltaleft -= speed;
+                                skip = true;
+                            }
                         }
                     }
                 }
+                skip = false;
             }
             if (rightb && right && !left)
             {
@@ -455,9 +465,15 @@ namespace RPG
                         if (x.Tag.ToString().Contains("map"))
                         {
                             x.Left -= speed;
+                            if (!skip)
+                            {
+                                deltaleft += speed;
+                                skip = true;
+                            }
                         }
                     }
                 }
+                skip = false;
 
             }
             rightb = true;
@@ -487,11 +503,22 @@ namespace RPG
                                     {
                                         if (left)
                                         {
-                                            y.Left += -speed;
+                                            y.Left -= speed;
+                                            if (!skip)
+                                            {
+                                                deltaleft += speed;
+                                                skip = true;
+                                            }
+                                            
                                         }
                                         if (right)
                                         {
-                                            y.Left -= -speed;
+                                            y.Left += speed; 
+                                            if (!skip)
+                                            {
+                                                deltaleft -= speed;
+                                                skip = true;
+                                            }
                                         }
 
                                     }
@@ -502,6 +529,7 @@ namespace RPG
                     }
                 }
             }
+            skip = false;
         }
         bool s = true;
         bool keydown = false;
@@ -537,10 +565,6 @@ namespace RPG
                     player.BackColor = Color.Transparent;
                 }
             }
-            /*else if (e.KeyCode == Keys.ShiftKey && fuelvalue != 0)
-            {
-                airwalk = true;
-            }*/
             else if (e.KeyCode == Keys.Space && OnPlatform() && !airwalk && !keydown)
             {
                 jump = true;
@@ -1062,7 +1086,11 @@ namespace RPG
             }
             if (jump)
             {
-                airSpeed--;
+                if (airSpeed > -25)
+                {
+
+                    airSpeed--;
+                }
                 foreach (Control x in Controls)
                 {
                     if (x.Tag != null)
@@ -1088,9 +1116,16 @@ namespace RPG
                         if (x.Tag.ToString().Contains("map"))
                         {
                             x.Top += airSpeed;
+                            if (!skip)
+                            {
+                                deltatop -= airSpeed;
+                                skip = true;
+                            }
+                            
                         }
                     }
                 }
+                skip = false;
                 if (n < 10 && !OnPlatform())
                 {
                     bool vis = true;
@@ -1244,7 +1279,6 @@ namespace RPG
             }
         }
 
-        int h1 = 0;
         int h2 = 0;
         int h3 = 0;
         int h4 = 0;
@@ -1267,6 +1301,8 @@ namespace RPG
             {
                 health--;
                 fall = 0;
+                airwalk = false;
+                k = 0;
             }
         }
         private void Heart_Tick(object sender, EventArgs e)
@@ -1300,6 +1336,10 @@ namespace RPG
                     {
                         h4++;
                         heart4.Image = Image.FromFile(@"heart\" + h4 + ".png");
+                    }
+                    else
+                    {
+                        a4 = false;
                     }
                 }
 
@@ -1346,7 +1386,6 @@ namespace RPG
                     heart1.Tag = "1.full";
                     heart1.Image = Image.FromFile(@"heart\" + 0 + ".png");
                     healthprev = 1;
-                    h1 = 0;
                 }
                 if (a2)
                 {
@@ -1367,17 +1406,35 @@ namespace RPG
             if (health == 0)
             {
                 heart1.Tag = "1.damaged";
-                if (h1 < 20)
-                {
-                    h1++;
-                    heart1.Image = Image.FromFile(@"heart\" + h1 + ".png");
-                }
-                else
-                {
-                    healthprev = 0;
-                }
-            }
+                heart1.Image = Image.FromFile(@"heart\" + 20 + ".png");
 
+                foreach (Control x in Controls)
+                {
+                    if (x.Tag != null)
+                    {
+                        if (x.Tag.ToString().Contains("map"))
+                        {
+                            x.Top += deltatop + 180;
+                            x.Left += deltaleft;
+                        }
+                    }
+                }
+
+                deltaleft = 0;
+                deltatop = 0;
+                healthprev = 0;
+                health = 4;
+                heart1.Image = Image.FromFile(@"heart\" + 0 + ".png");
+                heart1.Tag = "1.full";
+                heart2.Image = Image.FromFile(@"heart\" + 0 + ".png");
+                heart2.Tag = "2.full";
+                heart3.Image = Image.FromFile(@"heart\" + 0 + ".png");
+                heart3.Tag = "3.full";
+                heart4.Image = Image.FromFile(@"heart\" + 0 + ".png");
+                heart4.Tag = "4.full";
+
+            }
+           
         }
     }
 }
