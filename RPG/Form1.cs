@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.IO;
 
@@ -18,13 +14,16 @@ namespace RPG
         static PictureBox player = new PictureBox();
         public Form1()
         {
-
+            
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             InitializeComponent();
+            pictureBox1.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - pictureBox1.Width / 2 + 110, 100);
+            Options.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Options.Width / 2, 500);
+            Exit.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Exit.Width / 2, 550);
+            Start.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Start.Width / 2, 450);
             beatit.SoundLocation = "beat.wav";
-            beatit.PlayLooping();
-           
+            mute.Image = Image.FromFile("mute.png");
         }
         System.Media.SoundPlayer beatit = new System.Media.SoundPlayer();
 
@@ -44,7 +43,7 @@ namespace RPG
         
         private void Start_Click(object sender, EventArgs e)
         {
-            
+            health = 4;
             healthlist.Add(false);
             label.Visible = true;
             clickenabled = true;
@@ -308,8 +307,8 @@ namespace RPG
 
             Console.ReadLine();
             int[] vari = new int[2];
-            vari[0] = (int)(Width / 2 - player.Width / 2) - player.Left;
-            vari[1] = (int)(Height * 2 / 3 - player.Height / 2) - player.Top;
+            vari[0] = Width / 2 - player.Width / 2 - player.Left;
+            vari[1] = Height * 2 / 3 - player.Height / 2 - player.Top;
 
             foreach (Control x in Controls)
             {
@@ -336,44 +335,54 @@ namespace RPG
 
         static int name = 0;
         
-        static bool rightb = true;
-        static bool leftb = true;
+        bool rightb = true;
+        bool leftb = true;
+        PictureBox Background2 = new PictureBox();
+        PictureBox mute = new PictureBox();
+        Button back = new Button();
+
         private void Options_Click(object sender, EventArgs e)
         {
-            Controls.Clear();
-            Button back = new Button();
-            back.Click += back_Click;
-            back.Left = 880;
-            back.Top = 400;
-            back.Visible = true;
-            back.Size = new Size(200, 50);
-            back.UseVisualStyleBackColor = true;
-            back.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            back.Text = "Back To The Menu";
+            Background2.Image = Image.FromFile("white.png");
+            Controls.Add(Background2);
             Controls.Add(back);
-
-            Button mute = new Button();
-            mute.Click += mute_Click;
-            mute.Left = 880;
-            mute.Top = 460;
-            mute.Visible = true;
-            mute.Size = new Size(200, 50);
-            mute.UseVisualStyleBackColor = true;
-            mute.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            mute.Text = "Mute";
             Controls.Add(mute);
+            Background2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+            Background2.BringToFront();
+            back.Click += back_Click;
+            
+            back.Size = new Size(77, 77);
+            back.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            back.Location = new Point(75, 75);
+            back.Image = Image.FromFile("backarrow.png");
+            back.TabStop = false;
+            back.FlatStyle = FlatStyle.Flat;
+            back.FlatAppearance.BorderSize = 0;
+            back.FlatAppearance.BorderColor = Color.FromArgb(0, 255, 255, 255);
+
+            
+            GraphicsPath p = new GraphicsPath();
+            p.AddEllipse(1, 1, 77, 77);
+            back.Region = new Region(p);
+
+           
+            back.BringToFront();
+
+            mute.Size = new Size(50, 50);
+            mute.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - 25, 460);
+
+            mute.TabStop = false;
+
+            mute.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            mute.MouseUp += new MouseEventHandler(Mute_MouseUp);
+            mute.BringToFront();
         }
-        private void mute_Click(object sender, EventArgs e)
-        {
-            beatit.Stop();
-        }
+       
         private void back_Click(object sender, EventArgs e)
         {
-            Controls.Clear();
-            Controls.Add(Start);
-            Controls.Add(pictureBox1);
-            Controls.Add(Options);
-            Controls.Add(Exit);
+            Controls.Remove(Background2);
+            Controls.Remove(mute);
+            Controls.Remove(back);
         }
         static PictureBox hat = new PictureBox();
         private void boomerang()
@@ -533,6 +542,91 @@ namespace RPG
         }
         bool s = true;
         bool keydown = false;
+        bool isplaying = true;
+        Label Resume = new Label();
+        Label Restart = new Label();
+        PictureBox Background = new PictureBox();
+        private void Resume_Click(object sender, EventArgs e)
+        {
+            Boomerang.Start();
+            Heart.Start();
+            Controls.Remove(Resume);
+            Controls.Remove(Restart);
+            Controls.Remove(pictureBox1);
+            Controls.Remove(Exit);
+            Controls.Remove(Options);
+            Controls.Remove(Background);
+            Moonwalk.Start();
+            jumptimer.Start();
+            Fuel.Start();
+            Heart.Start();
+            Fallingdamage.Start();
+            Boomerang.Start();
+            isesc = false;
+        }
+        private void Restart_Click(object sender, EventArgs e)
+        {
+            health = 0;
+            Boomerang.Start();
+            Heart.Start();
+            Controls.Remove(Resume);
+            Controls.Remove(Restart);
+            Controls.Remove(pictureBox1);
+            Controls.Remove(Exit);
+            Controls.Remove(Options);
+            Controls.Remove(Background);
+            Moonwalk.Start();
+            jumptimer.Start();
+            Fuel.Start();
+            Heart.Start();
+            Fallingdamage.Start();
+            Boomerang.Start();
+            isesc = false;
+        }
+        bool isesc = false;
+
+        #region Menuevents
+        private void Start_MouseEnter(object sender, EventArgs e)
+        {
+            Start.BackColor = Color.LightGray;
+        }
+        private void Start_MouseLeave(object sender, EventArgs e)
+        {
+            Start.BackColor = Color.White;
+        }
+        private void Options_MouseEnter(object sender, EventArgs e)
+        {
+            Options.BackColor = Color.LightGray;
+        }
+        private void Options_MouseLeave(object sender, EventArgs e)
+        {
+            Options.BackColor = Color.White;
+        }
+        private void Exit_MouseEnter(object sender, EventArgs e)
+        {
+            Exit.BackColor = Color.LightGray;
+        }
+        private void Exit_MouseLeave(object sender, EventArgs e)
+        {
+            Exit.BackColor = Color.White;
+        }
+        private void Restart_MouseEnter(object sender, EventArgs e)
+        {
+            Restart.BackColor = Color.LightGray;
+        }
+        private void Restart_MouseLeave(object sender, EventArgs e)
+        {
+            Restart.BackColor = Color.White;
+        }
+        private void Resume_MouseEnter(object sender, EventArgs e)
+        {
+            Resume.BackColor = Color.LightGray;
+        }
+        private void Resume_MouseLeave(object sender, EventArgs e)
+        {
+            Resume.BackColor = Color.White;
+        }
+        #endregion
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.A)
@@ -548,6 +642,96 @@ namespace RPG
                     }
                     player.Image = Image.FromFile(@"player\left\" + n + ".png");
                     player.BackColor = Color.Transparent;
+                }
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                if (!isesc)
+                {
+                    Moonwalk.Stop();
+                    jumptimer.Stop();
+                    Fuel.Stop();
+                    Heart.Stop();
+                    Fallingdamage.Stop();
+                    Boomerang.Stop();
+
+
+                    Resume.Font = new Font("Consolas",  16F, FontStyle.Bold, GraphicsUnit.Point);
+                    Resume.TextAlign = ContentAlignment.MiddleCenter;
+                    Restart.Font = new Font("Consolas", 16F, FontStyle.Bold, GraphicsUnit.Point);
+                    Restart.TextAlign = ContentAlignment.MiddleCenter;
+                    Options.Font = new Font("Consolas", 16F, FontStyle.Bold, GraphicsUnit.Point);
+                    Options.TextAlign = ContentAlignment.MiddleCenter;
+                    Options.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Options.Width / 2, 450);
+
+                    Background.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+                    Background.Image = Image.FromFile("white.png");
+
+                    
+
+                    Resume.Size = new Size(150, 50);
+                    Resume.Text = "RESUME";
+                    Resume.Click += new EventHandler(Resume_Click);
+                    Resume.BackColor = Color.White;
+                    Resume.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Resume.Width / 2, 400);
+                    Resume.MouseEnter += new EventHandler(Resume_MouseEnter);
+                    Resume.MouseLeave += new EventHandler(Resume_MouseLeave);
+
+                    Restart.Size = new Size(150, 50);
+                    Restart.Text = "RESTART";
+                    Restart.Click += new EventHandler(Restart_Click);
+                    Restart.BackColor = Color.White;
+                    Restart.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Restart.Width / 2, 500);
+                    Restart.MouseEnter += new EventHandler(Restart_MouseEnter);
+                    Restart.MouseLeave += new EventHandler(Restart_MouseLeave);
+
+                    Exit.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Exit.Width / 2, 550);
+
+                    Controls.Add(Resume);
+                    Controls.Add(Restart);
+                    Controls.Add(Options);
+                    Controls.Add(pictureBox1);
+                    Controls.Add(Exit);
+                    Controls.Add(Background);
+                    Background.BringToFront();
+                    Resume.BringToFront();
+                    Exit.BringToFront();
+                    pictureBox1.BringToFront();
+                    Restart.BringToFront();
+                    Options.BringToFront();
+                    isesc = true;
+                }
+                else
+                {
+                    Boomerang.Start();
+                    Heart.Start();
+                    Controls.Remove(Resume);
+                    Controls.Remove(pictureBox1);
+                    Controls.Remove(Exit);
+                    Controls.Remove(Restart);
+                    Controls.Remove(Options);
+                    Controls.Remove(Background);
+                    Moonwalk.Start();
+                    jumptimer.Start();
+                    Fuel.Start();
+                    Heart.Start();
+                    Fallingdamage.Start();
+                    Boomerang.Start();
+                    isesc = false;
+                }
+
+            }
+            else if (e.KeyCode == Keys.M)
+            {
+                if (isplaying == true)
+                {
+                    beatit.Stop();
+                    isplaying = false;
+                }
+                else
+                {
+                    beatit.PlayLooping();
+                    isplaying = true;
                 }
             }
             else if (e.KeyCode == Keys.D)
@@ -577,21 +761,24 @@ namespace RPG
                 }
                 keydown = !keydown;
             }
-           
+
             else if (e.KeyCode == Keys.B)
             {
-                
+
                 if (debug)
                 {
                     debug = false;
                 }
                 else
                 {
-                    
+
                     debug = true;
                 }
             }
         }
+
+        
+
         bool once = false;
         static bool airwalk = false;
         static bool debug = false;
@@ -653,10 +840,6 @@ namespace RPG
                         if (x.Tag.ToString().Contains("wall"))
                         {
                             hit = true;
-                        }
-                        if (true)
-                        {
-
                         }
                     }
                 }
@@ -1209,62 +1392,91 @@ namespace RPG
             }
             
         }
-
-        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        private void Mute_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.XButton1 && fuelvalue > 0)
+           
+            if (e.Button == MouseButtons.Left)
             {
-                airwalk = true;
-                k = 0;
-            }
-            else if (e.Button == MouseButtons.Right)
-            {
-                counter = 20;
-            }
-            else if (e.Button == MouseButtons.Left)
-            {
-                if (clickenabled)
+
+                if (isplaying)
                 {
-                    clickenabled = false;
-                    bullet = true;
-                    if (MousePosition.Y == player.Top + 4 || MousePosition.X == player.Left + (int)player.Width / 2)
+                    BeginInvoke(new Action(() => 
                     {
-                        if (MousePosition.X == player.Left + (int)player.Width / 2)
+                        mute.Image = Image.FromFile("mute.png");
+                        beatit.Stop();
+                        isplaying = false;
+                    }));
+                   
+                }
+                if (!isplaying)
+                {
+                    BeginInvoke(new Action(() =>
+                    {
+                        mute.Image = Image.FromFile("speaker.png");
+                        beatit.PlayLooping();
+                        isplaying = true;
+                    }));
+                    
+                }
+            }
+           
+        }
+        
+    private void Form1_MouseDown(object sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.XButton1 && fuelvalue > 0)
+        {
+            airwalk = true;
+            k = 0;
+        }
+        else if (e.Button == MouseButtons.Right)
+        {
+            counter = 20;
+        }
+        else if (e.Button == MouseButtons.Left)
+        {
+            if (clickenabled)
+            {
+                clickenabled = false;
+                bullet = true;
+                if (MousePosition.Y == player.Top + 4 || MousePosition.X == player.Left + player.Width / 2)
+                {
+                    if (MousePosition.X == player.Left + player.Width / 2)
+                    {
+                        diry = 1;
+                        if (MousePosition.Y > player.Top + 4)
                         {
-                            diry = 1;
-                            if (MousePosition.Y > player.Top + 4)
-                            {
-                                diry = -1;
-                            }
-                        }
-                        else
-                        {
-                            dirx = 1;
-                            if (MousePosition.X > player.Left + (int)player.Width / 2)
-                            {
-                                dirx = -1;
-                            }
+                            diry = -1;
                         }
                     }
                     else
                     {
-                        float t = (float)Math.Abs(MousePosition.Y - (player.Top + 4)) / (float)(Math.Abs(MousePosition.Y - (player.Top + (int)player.Width / 2)) + (float)Math.Abs(MousePosition.X - (player.Left + (int)player.Width / 2)));
-                        int a = 1;
-                        if (MousePosition.Y < player.Top + 4)
+                        dirx = 1;
+                        if (MousePosition.X > player.Left + player.Width / 2)
                         {
-                            a = -1;
+                            dirx = -1;
                         }
-                        diry = t * a;
-                        a = 1;
-                        if (MousePosition.X < player.Left + (int)player.Width / 2)
-                        {
-                            a = -1;
-                        }
-                        dirx = (1 - t) * a;
                     }
+                }
+                else
+                {
+                    float t = (float)Math.Abs(MousePosition.Y - (player.Top + 4)) / (float)(Math.Abs(MousePosition.Y - (player.Top + player.Width / 2)) + (float)Math.Abs(MousePosition.X - (player.Left + player.Width / 2)));
+                    int a = 1;
+                    if (MousePosition.Y < player.Top + 4)
+                    {
+                        a = -1;
+                    }
+                    diry = t * a;
+                    a = 1;
+                    if (MousePosition.X < player.Left + player.Width / 2)
+                    {
+                        a = -1;
+                    }
+                    dirx = (1 - t) * a;
                 }
             }
         }
+    }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {

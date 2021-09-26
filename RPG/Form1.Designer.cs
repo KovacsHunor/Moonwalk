@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+using System.Windows.Forms;
 namespace RPG
 {
     partial class Form1
@@ -34,12 +35,12 @@ namespace RPG
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.Start = new System.Windows.Forms.Button();
-            this.Exit = new System.Windows.Forms.Button();
-            this.Options = new System.Windows.Forms.Button();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.timer3 = new System.Windows.Forms.Timer(this.components);
+            this.Start = new System.Windows.Forms.Label();
+            this.Exit = new System.Windows.Forms.Label();
+            this.Options = new System.Windows.Forms.Label();
+            this.Main = new System.Windows.Forms.Timer(this.components);
+            this.Boomerang = new System.Windows.Forms.Timer(this.components);
+            this.Moonwalk = new System.Windows.Forms.Timer(this.components);
             this.jumptimer = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Fuel = new System.Windows.Forms.Timer(this.components);
@@ -50,57 +51,60 @@ namespace RPG
             // 
             // Start
             // 
-            this.Start.BackColor = System.Drawing.Color.Green;
-            this.Start.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.Start.ForeColor = System.Drawing.Color.Black;
-            this.Start.Location = new System.Drawing.Point(925, 400);
+            this.Start.BackColor = System.Drawing.Color.White;
+            this.Start.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Start.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.Start.Location = new System.Drawing.Point(0, 0);
             this.Start.Name = "Start";
-            this.Start.Size = new System.Drawing.Size(110, 50);
-            this.Start.TabIndex = 1;
+            this.Start.Size = new System.Drawing.Size(150, 50);
             this.Start.Text = "START";
-            this.Start.UseVisualStyleBackColor = false;
             this.Start.Click += new System.EventHandler(this.Start_Click);
+            this.Start.MouseEnter += new System.EventHandler(this.Start_MouseEnter);
+            this.Start.MouseLeave += new EventHandler(Start_MouseLeave);
             // 
             // Exit
             // 
-            this.Exit.BackColor = System.Drawing.Color.Red;
-            this.Exit.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.Exit.Location = new System.Drawing.Point(925, 520);
+            this.Exit.BackColor = System.Drawing.Color.White;
+            this.Exit.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.Exit.Location = new System.Drawing.Point(0, 0);
             this.Exit.Name = "Exit";
-            this.Exit.Size = new System.Drawing.Size(110, 50);
-            this.Exit.TabIndex = 2;
+            this.Exit.Size = new System.Drawing.Size(150, 50);
+            this.Exit.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.Exit.Text = "EXIT";
-            this.Exit.UseVisualStyleBackColor = false;
             this.Exit.Click += new System.EventHandler(this.Exit_Click);
+            this.Exit.MouseEnter += new System.EventHandler(this.Exit_MouseEnter);
+            this.Exit.MouseLeave += new EventHandler(Exit_MouseLeave);
             // 
             // Options
             // 
-            this.Options.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.Options.Location = new System.Drawing.Point(925, 460);
+            this.Options.BackColor = System.Drawing.Color.White;
+            this.Options.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.Options.Location = new System.Drawing.Point(0, 0);
             this.Options.Name = "Options";
-            this.Options.Size = new System.Drawing.Size(110, 50);
-            this.Options.TabIndex = 3;
+            this.Options.Size = new System.Drawing.Size(150, 50);
+            this.Options.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.Options.Text = "OPTIONS";
-            this.Options.UseVisualStyleBackColor = false;
             this.Options.Click += new System.EventHandler(this.Options_Click);
+            this.Options.MouseEnter += new System.EventHandler(this.Options_MouseEnter);
+            this.Options.MouseLeave += new EventHandler(Options_MouseLeave);
             // 
-            // timer1
+            // Main
             // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 10;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.Main.Enabled = true;
+            this.Main.Interval = 10;
+            this.Main.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // timer2
+            // Boomerang
             // 
-            this.timer2.Enabled = true;
-            this.timer2.Interval = 25;
-            this.timer2.Tick += new System.EventHandler(this.Boomerang_Tick);
+            this.Boomerang.Enabled = true;
+            this.Boomerang.Interval = 25;
+            this.Boomerang.Tick += new System.EventHandler(this.Boomerang_Tick);
             // 
-            // timer3
+            // Moonwalk
             // 
-            this.timer3.Enabled = true;
-            this.timer3.Interval = 70;
-            this.timer3.Tick += new System.EventHandler(this.Moonwalk_Tick);
+            this.Moonwalk.Enabled = true;
+            this.Moonwalk.Interval = 70;
+            this.Moonwalk.Tick += new System.EventHandler(this.Moonwalk_Tick);
             // 
             // jumptimer
             // 
@@ -111,9 +115,9 @@ namespace RPG
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(472, 141);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1100, 220);
+            this.pictureBox1.Size = new System.Drawing.Size(1257, 293);
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
             // 
@@ -139,7 +143,8 @@ namespace RPG
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1800, 850);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(1800, 851);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.Options);
             this.Controls.Add(this.Exit);
@@ -155,18 +160,20 @@ namespace RPG
 
         }
 
+        
+
         #endregion
-        private System.Windows.Forms.Button Start;
-        private System.Windows.Forms.Button Exit;
-        private System.Windows.Forms.Button Options;
-        private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Timer timer2;
-        private System.Windows.Forms.Timer timer3;
+        private System.Windows.Forms.Label Start;
+        private System.Windows.Forms.Label Exit;
+        private System.Windows.Forms.Label Options;
+        private System.Windows.Forms.Timer Main;
+        private System.Windows.Forms.Timer Moonwalk;
         private System.Windows.Forms.Timer jumptimer;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Timer Fuel;
         private System.Windows.Forms.Timer Heart;
         private System.Windows.Forms.Timer Fallingdamage;
+        private Timer Boomerang;
     }
 }
 
