@@ -14,7 +14,6 @@ namespace RPG
         static PictureBox player = new PictureBox();
         public Form1()
         {
-            
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             InitializeComponent();
@@ -39,7 +38,7 @@ namespace RPG
         PictureBox heart2 = new PictureBox();
         PictureBox heart3 = new PictureBox();
         PictureBox heart4 = new PictureBox();
-        
+        Point Spawnpoint;
         
         private void Start_Click(object sender, EventArgs e)
         {
@@ -171,10 +170,20 @@ namespace RPG
 
                         player.MouseDown += new MouseEventHandler(Form1_MouseDown);
                         player.MouseUp += new MouseEventHandler(Form1_MouseUp);
-                        player.Top = y * 60;
-                        player.Left = i * 60;
-                        
+                        player.Location = new Point(i * 60, y * 60);
+
                         player.BackColor = Color.Transparent;
+                    }
+                    else if (line[i] == 's')
+                    {
+                        Spawnpoint = new Point(i * scale, y * scale + 40);
+                        placeHolder.Size = new Size(scale, scale);
+                        placeHolder.Tag = "spawn.wall.map";
+                        placeHolder.BackgroundImage = Image.FromFile("wall.png");
+                        Controls.Add(placeHolder);
+
+                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
                     }
                     else if (line[i] == 'h')
                     {
@@ -343,6 +352,7 @@ namespace RPG
 
         private void Options_Click(object sender, EventArgs e)
         {
+            
             Background2.Image = Image.FromFile("white.png");
             Controls.Add(Background2);
             Controls.Add(back);
@@ -540,6 +550,7 @@ namespace RPG
             }
             skip = false;
         }
+
         bool s = true;
         bool keydown = false;
         bool isplaying = true;
@@ -806,6 +817,23 @@ namespace RPG
             return plat;
         }
         int dangercooldown = 200;
+        bool OnGround()
+        {
+            bool ground = false;
+
+            
+            foreach (Control x in Controls)
+            {
+                if (x.Tag != null)
+                {
+                    if (x.Tag.ToString().Contains("wall") && x.Tag.ToString().Contains("map") && x.Left < player.Right && x.Right > player.Left && player.Bottom == x.Top)
+                    {
+                        ground = true;
+                    }
+                }
+            }
+            return ground;
+        }
         bool OnPlatform(int i)
         {
             bool plat = true;
@@ -910,7 +938,8 @@ namespace RPG
                                                 {
                                                     if (y.Tag.ToString().Contains(line[2] + "." + line[3]))
                                                     {
-                                                        Controls.Remove(y);
+                                                        y.Visible = false;
+                                                        y.Tag = y.Tag.ToString().Replace(".wall", "");
                                                     }
                                                 }
                                             }
@@ -948,7 +977,7 @@ namespace RPG
                                 hat.Left += (int)((x.Bottom - hat.Top) / diry * dirx);
                             }
                             hat.Top = x.Bottom;
-                            diry = diry * -1;
+                            diry *= -1;
                             move = false;
                         }
                         if ((x.Left < hat.Right + (int)(dirx * speedboom) && x.Right > hat.Left + (int)(dirx * speedboom)) && (x.Top <= hat.Bottom + (int)(diry * speedboom)) && x.Top >= hat.Bottom)
@@ -970,7 +999,8 @@ namespace RPG
                                                 {
                                                     if (y.Tag.ToString().Contains(line[2] + "." + line[3]))
                                                     {
-                                                        Controls.Remove(y);
+                                                        y.Visible = false;
+                                                        y.Tag = y.Tag.ToString().Replace(".wall", "");
                                                     }
                                                 }
                                             }
@@ -1007,7 +1037,7 @@ namespace RPG
                                 hat.Left += (int)((x.Top - hat.Bottom) / diry * dirx);
                             }
                             hat.Top = x.Top - hat.Height;
-                            diry = diry * -1;
+                            diry *= -1;
                             move = false;
                         }
                         if ((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Right >= hat.Left + (int)(dirx * speedboom)) && x.Right <= hat.Left)
@@ -1029,7 +1059,8 @@ namespace RPG
                                                 {
                                                     if (y.Tag.ToString().Contains(line[2] + "." + line[3]))
                                                     {
-                                                        Controls.Remove(y);
+                                                        y.Visible = false;
+                                                        y.Tag = y.Tag.ToString().Replace(".wall", "");
                                                     }
                                                 }
                                             }
@@ -1047,14 +1078,14 @@ namespace RPG
                                         if ((y.Left < hat.Right + (int)((x.Right - hat.Left) / diry * dirx) && y.Right > hat.Left + (int)((x.Right - hat.Left) / diry * dirx)) && (y.Bottom >= hat.Top + (int)((x.Right - hat.Left) / dirx * diry)/**/) && y.Bottom <= hat.Top)
                                         {
                                             hat.Top = y.Bottom;
-                                            diry = diry * -1;
+                                            diry *= -1;
                                             counter++;
                                             ELSE = false;
                                         }
                                         else if ((y.Left < hat.Right + (int)((x.Right - hat.Left) / diry * dirx) && y.Right > hat.Left + (int)((x.Right - hat.Left) / diry * dirx)) && (y.Top <= hat.Bottom + (int)((x.Right - hat.Left) / dirx * diry)/**/) && y.Top >= hat.Bottom)
                                         {
                                             hat.Top = y.Top - hat.Height;
-                                            diry = diry * -1;
+                                            diry *= -1;
                                             counter++;
                                             ELSE = false;
                                         }
@@ -1066,7 +1097,7 @@ namespace RPG
                                 hat.Top += (int)((x.Right - hat.Left) / dirx * diry);
                             }
                             hat.Left = x.Right;
-                            dirx = dirx * -1;
+                            dirx *= -1;
                             move = false;
                         }
                         if ((x.Top < hat.Bottom + (int)(diry * speedboom) && x.Bottom > hat.Top + (int)(diry * speedboom)) && (x.Left <= hat.Right + (int)(dirx * speedboom)) && x.Left >= hat.Right)
@@ -1088,7 +1119,8 @@ namespace RPG
                                                 {
                                                     if (y.Tag.ToString().Contains(line[2] + "." + line[3]))
                                                     {
-                                                        Controls.Remove(y);
+                                                        y.Visible = false;
+                                                        y.Tag = y.Tag.ToString().Replace(".wall", "");
                                                     }
                                                 }
                                             }
@@ -1110,14 +1142,14 @@ namespace RPG
                                         if ((y.Left < hat.Right + (int)((x.Left - hat.Right) / diry * dirx) && y.Right > hat.Left + (int)((x.Left - hat.Right) / diry * dirx)) && (y.Bottom >= hat.Top + (int)((x.Left - hat.Right) / dirx * diry)/**/) && y.Bottom <= hat.Top)
                                         {
                                             hat.Top = y.Bottom;
-                                            diry = diry * -1;
+                                            diry *= -1;
                                             counter++;
                                             ELSE = false;
                                         }
                                         else if ((y.Left < hat.Right + (int)((x.Left - hat.Right) / diry * dirx) && y.Right > hat.Left + (int)((x.Left - hat.Right) / diry * dirx)) && (y.Top <= hat.Bottom + (int)((x.Left - hat.Right) / dirx * diry)/**/) && y.Top >= hat.Bottom)
                                         {
                                             hat.Top = y.Top - hat.Height;
-                                            diry = diry * -1;
+                                            diry *= -1;
                                             counter++;
                                             ELSE = false;
                                         }
@@ -1129,7 +1161,7 @@ namespace RPG
                                 hat.Top += (int)((x.Left - hat.Right) / dirx * diry);
                             }
                             hat.Left = x.Left - hat.Width;
-                            dirx = dirx * -1;
+                            dirx *= -1;
                             move = false;
                         }
                     }
@@ -1364,23 +1396,18 @@ namespace RPG
         Label backlabel = new Label();
         Label label = new Label();
         int fuelvalue = 100;
-        int cooldown = 30;
+
         private void Fuel_Tick(object sender, EventArgs e)
         {
-            this.label.Width = (int)(fuelvalue * 2.6);
+            label.Width = (int)(fuelvalue * 2.6);
             if (airwalk)
             {
                 fuelvalue -= 2;
-                cooldown = 30;
+
             }
-            else if(fuelvalue < 100)
+            else if (fuelvalue < 100 && OnGround())
             {
-                cooldown--;
-                if (cooldown == 0)
-                {
-                    fuelvalue += 4;
-                    cooldown++;
-                }
+                fuelvalue += 4;
             }
             if (fuelvalue > 100)
             {
@@ -1390,7 +1417,7 @@ namespace RPG
             {
                 fuelvalue = 0;
             }
-            
+
         }
         private void Mute_MouseUp(object sender, MouseEventArgs e)
         {
@@ -1620,18 +1647,36 @@ namespace RPG
                 heart1.Tag = "1.damaged";
                 heart1.Image = Image.FromFile(@"heart\" + 20 + ".png");
 
+                int a = 0;
+                int b = 0;
                 foreach (Control x in Controls)
                 {
                     if (x.Tag != null)
                     {
-                        if (x.Tag.ToString().Contains("map"))
+                        if (x.Tag.ToString().Contains("spawn"))
                         {
-                            x.Top += deltatop + 180;
-                            x.Left += deltaleft;
+                            a = Spawnpoint.X - x.Left;
+                            b = Spawnpoint.Y - x.Top;
                         }
                     }
                 }
-
+                foreach (Control x in Controls)
+                {
+                    if (x.Tag != null)
+                    {
+                        if (x.Tag.ToString().Contains("door.map"))
+                        {
+                            x.Visible = true;
+                            x.Tag = x.Tag.ToString().Replace("door", "door.wall");
+                        }
+                        if (x.Tag.ToString().Contains("map"))
+                        {
+                            x.Left += a;
+                            x.Top += b;
+                        }
+                    }
+                }
+                
                 deltaleft = 0;
                 deltatop = 0;
                 healthprev = 0;
