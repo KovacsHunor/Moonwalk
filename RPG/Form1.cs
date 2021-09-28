@@ -422,8 +422,6 @@ namespace RPG
         int healthprev = 4;
         int health = 4;
         List<bool> healthlist = new List<bool>();
-        int deltaleft = 0;
-        int deltatop = 0;
         bool skip = false;
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -466,8 +464,6 @@ namespace RPG
                             x.Left += speed;
                             if (!skip)
                             {
-
-                                deltaleft -= speed;
                                 skip = true;
                             }
                         }
@@ -486,7 +482,6 @@ namespace RPG
                             x.Left -= speed;
                             if (!skip)
                             {
-                                deltaleft += speed;
                                 skip = true;
                             }
                         }
@@ -498,17 +493,25 @@ namespace RPG
             rightb = true;
             leftb = true;
             
-            foreach (Control x in this.Controls)
+            foreach (Control x in Controls)
             {
                 if (x.Tag != null)
                 {
-                    if (x is PictureBox && x.Tag.ToString().Contains("wall"))
+                    if (debug)
                     {
-                        if ((x.Top < (player.Top + player.Height) && (x.Top + x.Height) > player.Top) && (x.Left + x.Width) == player.Left)
+
+                    }
+                    if (x.Tag.ToString().Contains("wall"))
+                    {
+                        if (x.Top == -70)
+                        {
+
+                        }
+                        if (x.Top < player.Bottom && x.Bottom > player.Top && x.Right == player.Left)
                         {
                             leftb = false;
                         }
-                        if ((x.Top < (player.Top + player.Height) && (x.Top + x.Height) > player.Top) && x.Left == (player.Left + player.Width))
+                        if ((x.Top < player.Bottom && x.Bottom > player.Top) && x.Left == player.Right)
                         {
                             rightb = false;
                         }
@@ -525,7 +528,6 @@ namespace RPG
                                             y.Left -= speed;
                                             if (!skip)
                                             {
-                                                deltaleft += speed;
                                                 skip = true;
                                             }
                                             
@@ -535,7 +537,6 @@ namespace RPG
                                             y.Left += speed; 
                                             if (!skip)
                                             {
-                                                deltaleft -= speed;
                                                 skip = true;
                                             }
                                         }
@@ -553,7 +554,7 @@ namespace RPG
 
         bool s = true;
         bool keydown = false;
-        bool isplaying = true;
+        bool isplaying = false;
         Label Resume = new Label();
         Label Restart = new Label();
         PictureBox Background = new PictureBox();
@@ -782,7 +783,6 @@ namespace RPG
                 }
                 else
                 {
-
                     debug = true;
                 }
             }
@@ -1333,7 +1333,6 @@ namespace RPG
                             x.Top += airSpeed;
                             if (!skip)
                             {
-                                deltatop -= airSpeed;
                                 skip = true;
                             }
                             
@@ -1655,7 +1654,7 @@ namespace RPG
                     {
                         if (x.Tag.ToString().Contains("spawn"))
                         {
-                            a = Spawnpoint.X - x.Left;
+                            a = Spawnpoint.X - x.Left - 325;
                             b = Spawnpoint.Y - x.Top;
                         }
                     }
@@ -1666,8 +1665,8 @@ namespace RPG
                     {
                         if (x.Tag.ToString().Contains("door.map"))
                         {
-                            x.Visible = true;
-                            x.Tag = x.Tag.ToString().Replace("door", "door.wall");
+                           x.Visible = true;
+                           x.Tag = x.Tag.ToString().Replace("door", "door.wall");
                         }
                         if (x.Tag.ToString().Contains("map"))
                         {
@@ -1676,9 +1675,6 @@ namespace RPG
                         }
                     }
                 }
-                
-                deltaleft = 0;
-                deltatop = 0;
                 healthprev = 0;
                 health = 4;
                 heart1.Image = Image.FromFile(@"heart\" + 0 + ".png");
