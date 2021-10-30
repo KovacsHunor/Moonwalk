@@ -9,21 +9,43 @@ namespace RPG
 {
     public partial class Form1 : Form
     {
+        
         static int speed = 10;
         static int scale = 60;
         static PictureBox player = new PictureBox();
         public Form1()
         {
+            for (int i = 0; i < 6; i++)
+            {
+                opmod[i] = new Label();
+                opmod[i].Size = new Size(150, 50);
+                opmod[i].Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - opmod[i].Width / 2, 400 + 50 * i);
+                opmod[i].MouseEnter += new EventHandler(opmod_MouseEnter);
+                opmod[i].MouseLeave += new EventHandler(opmod_MouseLeave);
+                opmod[i].Font = new Font("Consolas", 16F, FontStyle.Bold, GraphicsUnit.Point);
+                opmod[i].TextAlign = ContentAlignment.MiddleCenter;
+            }
+            opmod[0].Text = "A";
+            opmod[1].Text = "D";
+            opmod[2].Text = "Space";
+            opmod[3].Text = "W";
+            opmod[4].Text = "Left";
+            opmod[5].Text = "Right";
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             InitializeComponent();
-            pictureBox1.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - pictureBox1.Width / 2 + 110, 100);
+
+            pictureBox1.Size = new Size(1095, 251);
+            pictureBox1.Image = Image.FromFile("moonwalk.png");
+            pictureBox1.Location = new Point((Screen.PrimaryScreen.Bounds.Width / 2 - pictureBox1.Width / 2), 100);
             Options.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Options.Width / 2, 500);
             Exit.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Exit.Width / 2, 550);
             Start.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Start.Width / 2, 450);
             beatit.SoundLocation = "beat.wav";
-            mute.Image = Image.FromFile("mute.png");
         }
+
+        
+
         System.Media.SoundPlayer beatit = new System.Media.SoundPlayer();
 
         private void Exit_Click(object sender, EventArgs e)
@@ -39,9 +61,10 @@ namespace RPG
         PictureBox heart3 = new PictureBox();
         PictureBox heart4 = new PictureBox();
         Point Spawnpoint;
-        
+
         private void Start_Click(object sender, EventArgs e)
         {
+
             health = 4;
             healthlist.Add(false);
             label.Visible = true;
@@ -72,9 +95,9 @@ namespace RPG
             heart1.MouseDown += new MouseEventHandler(Form1_MouseDown);
             heart1.MouseUp += new MouseEventHandler(Form1_MouseUp);
             heart2.MouseDown += new MouseEventHandler(Form1_MouseDown);
-            heart2.MouseUp += new MouseEventHandler(Form1_MouseUp); 
+            heart2.MouseUp += new MouseEventHandler(Form1_MouseUp);
             heart3.MouseDown += new MouseEventHandler(Form1_MouseDown);
-            heart3.MouseUp += new MouseEventHandler(Form1_MouseUp); 
+            heart3.MouseUp += new MouseEventHandler(Form1_MouseUp);
             heart4.MouseDown += new MouseEventHandler(Form1_MouseDown);
             heart4.MouseUp += new MouseEventHandler(Form1_MouseUp);
 
@@ -82,13 +105,13 @@ namespace RPG
             heart2.Tag = "2.full";
             heart3.Tag = "3.full";
             heart4.Tag = "4.full";
-           
+
             backlabel.Location = new Point(1920 - (20 + 260), 80);
             backlabel.Size = new Size(260, 10);
             backlabel.BackColor = Color.FromArgb(104, 104, 104);
             backlabel.MouseDown += new MouseEventHandler(Form1_MouseDown);
             backlabel.MouseUp += new MouseEventHandler(Form1_MouseUp);
-            
+
             label.Location = new Point(1920 - (20 + 260), 80);
             label.Size = new Size(260, 10);
             label.BackColor = Color.FromArgb(0, 173, 255);
@@ -117,229 +140,232 @@ namespace RPG
             map.Enabled = false;
             map.Visible = false;
 
-            while (!levelLoader.EndOfStream)
-            {
-                
-                string line = levelLoader.ReadLine();
-                for (int i = 0; i < line.Length; i++)
+            #region maploader
+
+                while (!levelLoader.EndOfStream)
                 {
 
-                    PictureBox placeHolder = new PictureBox();
-                    int n = 0;
-                    bool w = false;
-                    int oi = i;
-                    while (line[i] == 'w')
+                    string line = levelLoader.ReadLine();
+                    for (int i = 0; i < line.Length; i++)
                     {
-                        w = true;
-                        n++;
-                        i++;
-                       
-                        if (i == line.Length)
+
+                        PictureBox placeHolder = new PictureBox();
+                        int n = 0;
+                        bool w = false;
+                        int oi = i;
+                        while (line[i] == 'w')
                         {
-                            i--;
-                            break;
+                            w = true;
+                            n++;
+                            i++;
+
+                            if (i == line.Length)
+                            {
+                                i--;
+                                break;
+                            }
+                            else if (line[i] != 'w')
+                            {
+                                i--;
+                                break;
+                            }
                         }
-                        else if (line[i] != 'w')
+                        if (w && n != 1)
                         {
-                            i--;
-                            break;
+
+                            placeHolder.Size = new Size(n * scale, scale);
+                            placeHolder.Tag = "wall.map";
+                            placeHolder.BackgroundImage = Image.FromFile("wall.png");
+                            placeHolder.Name = name.ToString();
+                            Controls.Add(placeHolder);
+
+                            placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                            placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+
+                            name++;
+
                         }
+                        else if (line[i] == 'c')
+                        {
+
+                            player.Size = new Size(50, 100);
+                            player.Tag = "player.map";
+                            player.Image = Image.FromFile(@"player\right\0.png");
+                            Controls.Add(player);
+
+                            player.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                            player.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                            player.Location = new Point(i * 60, y * 60);
+
+                            player.BackColor = Color.Transparent;
+                        }
+                        else if (line[i] == 's')
+                        {
+                            Spawnpoint = new Point(i * scale, y * scale + 40);
+                            placeHolder.Size = new Size(scale, scale);
+                            placeHolder.Tag = "spawn.wall.map";
+                            placeHolder.BackgroundImage = Image.FromFile("wall.png");
+                            Controls.Add(placeHolder);
+
+                            placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                            placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                        }
+                        else if (line[i] == 'h')
+                        {
+
+                            placeHolder.Size = new Size(scale, scale);
+                            placeHolder.Tag = "health.wall.map";
+                            placeHolder.BackgroundImage = Image.FromFile("wall.png");
+                            Controls.Add(placeHolder);
+
+                            placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                            placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                        }
+                        else if (line[i] == 'b')
+                        {
+                            placeHolder.Size = new Size(60, 60);
+                            placeHolder.Tag = "button.wall.map" + (y + 1) + "." + (i + 1);
+                            placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                            placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                            placeHolder.BackColor = Color.Green;
+                            placeHolder.Visible = true;
+                            Controls.Add(placeHolder);
+                        }
+                        else if (line[i] == 'x')
+                        {
+                            placeHolder.Size = new Size(60, 60);
+                            placeHolder.Tag = "danger.wall.map" + (y + 1) + "." + (i + 1);
+                            placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                            placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                            placeHolder.BackColor = Color.Red;
+                            placeHolder.Visible = true;
+                            Controls.Add(placeHolder);
+                        }
+                        else if (line[i] == 'd')
+                        {
+                            placeHolder.Size = new Size(60, 120);
+                            placeHolder.Tag = "door.wall.map" + (y + 1) + "." + (i + 1);
+                            placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                            placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                            placeHolder.BackColor = Color.Brown;
+                            placeHolder.Visible = true;
+                            Controls.Add(placeHolder);
+                        }
+                        if (n > 1)
+                        {
+                            placeHolder.Top = y * scale + 40;
+                            placeHolder.Left = oi * scale;
+                        }
+                        else
+                        {
+                            placeHolder.Top = y * scale + 40;
+                            placeHolder.Left = i * scale;
+                        }
+
                     }
-                    if (w && n != 1)
-                    {
-
-                        placeHolder.Size = new Size(n * scale, scale);
-                        placeHolder.Tag = "wall.map";
-                        placeHolder.BackgroundImage = Image.FromFile("wall.png");
-                        placeHolder.Name = name.ToString();
-                        Controls.Add(placeHolder);
-
-                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
-                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
-
-                        name++;
-
-                    }
-                    else if (line[i] == 'c')
-                    {
-
-                        player.Size = new Size(50, 100);
-                        player.Tag = "player.map";
-                        player.Image = Image.FromFile(@"player\right\0.png");
-                        Controls.Add(player);
-
-                        player.MouseDown += new MouseEventHandler(Form1_MouseDown);
-                        player.MouseUp += new MouseEventHandler(Form1_MouseUp);
-                        player.Location = new Point(i * 60, y * 60);
-
-                        player.BackColor = Color.Transparent;
-                    }
-                    else if (line[i] == 's')
-                    {
-                        Spawnpoint = new Point(i * scale, y * scale + 40);
-                        placeHolder.Size = new Size(scale, scale);
-                        placeHolder.Tag = "spawn.wall.map";
-                        placeHolder.BackgroundImage = Image.FromFile("wall.png");
-                        Controls.Add(placeHolder);
-
-                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
-                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
-                    }
-                    else if (line[i] == 'h')
-                    {
-
-                        placeHolder.Size = new Size(scale, scale);
-                        placeHolder.Tag = "health.wall.map";
-                        placeHolder.BackgroundImage = Image.FromFile("wall.png");
-                        Controls.Add(placeHolder);
-
-                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
-                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
-                    }
-                    else if (line[i] == 'b')
-                    {
-                        placeHolder.Size = new Size(60, 60);
-                        placeHolder.Tag = "button.wall.map" + (y + 1) + "." + (i + 1);
-                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
-                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
-                        placeHolder.BackColor = Color.Green;
-                        placeHolder.Visible = true;
-                        Controls.Add(placeHolder);
-                    }
-                    else if (line[i] == 'x')
-                    {
-                        placeHolder.Size = new Size(60, 60);
-                        placeHolder.Tag = "danger.wall.map" + (y + 1) + "." + (i + 1);
-                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
-                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
-                        placeHolder.BackColor = Color.Red;
-                        placeHolder.Visible = true;
-                        Controls.Add(placeHolder);
-                    }
-                    else if (line[i] == 'd')
-                    {
-                        placeHolder.Size = new Size(60, 120);
-                        placeHolder.Tag = "door.wall.map" + (y + 1) + "." + (i + 1);
-                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
-                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
-                        placeHolder.BackColor = Color.Brown;
-                        placeHolder.Visible = true;
-                        Controls.Add(placeHolder);
-                    }
-                    if (n > 1)
-                    {
-                        placeHolder.Top = y * scale + 40;
-                        placeHolder.Left = oi * scale;
-                    }
-                    else
-                    {
-                        placeHolder.Top = y * scale + 40;
-                        placeHolder.Left = i * scale;
-                    }
-
+                    y++;
                 }
-                y++;
-            }
 
-            levelLoader = new StreamReader("level0.txt");
-            int max = 0;
-            while (!levelLoader.EndOfStream)
-            {
-                string a = levelLoader.ReadLine();
-                if (a.Length > max)
-                {
-                    max = a.Length;
-                }
-            }
-            levelLoader.Close();
-            y = 0;
-            for (int i = 0; i < max; i++)
-            {
                 levelLoader = new StreamReader("level0.txt");
-                string line = "";
+                int max = 0;
                 while (!levelLoader.EndOfStream)
                 {
                     string a = levelLoader.ReadLine();
-                    if (i < a.Length)
+                    if (a.Length > max)
                     {
-                        line = a[i] + line;
-                    }
-                    else
-                    {
-                        line = " " + line;
+                        max = a.Length;
                     }
                 }
                 levelLoader.Close();
-                string mirror = "";
-                for (int j = 0; j < line.Length; j++)
+                y = 0;
+                for (int i = 0; i < max; i++)
                 {
-                    mirror = mirror + line[line.Length - 1 - j];
-                }
-                for (int j = 0; j < line.Length; j++)
-                {
-
-                    PictureBox placeHolder = new PictureBox();
-                    int n = 0;
-                    bool w = false;
-                    int oi = j;
-                    while (mirror[j] == 'w')
+                    levelLoader = new StreamReader("level0.txt");
+                    string line = "";
+                    while (!levelLoader.EndOfStream)
                     {
-                        w = true;
-                        n++;
-                        j++;
-                        if (j == mirror.Length)
+                        string a = levelLoader.ReadLine();
+                        if (i < a.Length)
                         {
-                            j--;
-                            break;
+                            line = a[i] + line;
+                        }
+                        else
+                        {
+                            line = " " + line;
                         }
                     }
-                    if (w && n != 1)
+                    levelLoader.Close();
+                    string mirror = "";
+                    for (int j = 0; j < line.Length; j++)
+                    {
+                        mirror = mirror + line[line.Length - 1 - j];
+                    }
+                    for (int j = 0; j < line.Length; j++)
                     {
 
-                        placeHolder.Size = new Size(scale, n * scale);
-                        placeHolder.Tag = "wall.map";
-                        placeHolder.BackgroundImage = Image.FromFile("wall.png");
+                        PictureBox placeHolder = new PictureBox();
+                        int n = 0;
+                        bool w = false;
+                        int oi = j;
+                        while (mirror[j] == 'w')
+                        {
+                            w = true;
+                            n++;
+                            j++;
+                            if (j == mirror.Length)
+                            {
+                                j--;
+                                break;
+                            }
+                        }
+                        if (w && n != 1)
+                        {
 
-                        Controls.Add(placeHolder);
-                        placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
-                        placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
-                        placeHolder.Name = name.ToString();
+                            placeHolder.Size = new Size(scale, n * scale);
+                            placeHolder.Tag = "wall.map";
+                            placeHolder.BackgroundImage = Image.FromFile("wall.png");
 
-                        name++;
+                            Controls.Add(placeHolder);
+                            placeHolder.MouseDown += new MouseEventHandler(Form1_MouseDown);
+                            placeHolder.MouseUp += new MouseEventHandler(Form1_MouseUp);
+                            placeHolder.Name = name.ToString();
 
+                            name++;
+
+                        }
+                        placeHolder.Top = oi * scale + 40;
+                        placeHolder.Left = y * scale;
                     }
-                    placeHolder.Top = oi * scale + 40;
-                    placeHolder.Left = y * scale;
+                    y++;
                 }
-                y++;
-            }
 
-            Console.ReadLine();
-            int[] vari = new int[2];
-            vari[0] = Width / 2 - player.Width / 2 - player.Left;
-            vari[1] = Height * 2 / 3 - player.Height / 2 - player.Top;
+                Console.ReadLine();
+                int[] vari = new int[2];
+                vari[0] = Width / 2 - player.Width / 2 - player.Left;
+                vari[1] = Height * 2 / 3 - player.Height / 2 - player.Top;
 
-            foreach (Control x in Controls)
-            {
-                if (x.Tag != null)
+                foreach (Control x in Controls)
                 {
-                    if (x.Tag.ToString().Contains("map"))
+                    if (x.Tag != null)
                     {
-                        x.Left += vari[0];
-                        x.Top += vari[1];
-                    }
-                    if (x.Tag.ToString().Contains("player"))
-                    {
-                        x.Tag = "player";
+                        if (x.Tag.ToString().Contains("map"))
+                        {
+                            x.Left += vari[0];
+                            x.Top += vari[1];
+                        }
+                        if (x.Tag.ToString().Contains("player"))
+                        {
+                            x.Tag = "player";
+                        }
                     }
                 }
-            }
 
-            air.Size = new Size(50, 1);
-            air.Location = new Point(player.Left, player.Bottom);
-            air.BackColor = Color.FromArgb(0, 173, 255);
-            air.Tag = "wall";
-            begin = true;
+                air.Size = new Size(50, 1);
+                air.Location = new Point(player.Left, player.Bottom);
+                air.BackColor = Color.FromArgb(0, 173, 255);
+                air.Tag = "wall";
+                begin = true;
+            #endregion
         }
 
         static int name = 0;
@@ -347,16 +373,24 @@ namespace RPG
         bool rightb = true;
         bool leftb = true;
         PictureBox Background2 = new PictureBox();
-        PictureBox mute = new PictureBox();
         Button back = new Button();
-
         private void Options_Click(object sender, EventArgs e)
         {
-            
+            Background.MouseDown += Form1_MouseDown;
+            Background2.MouseDown += Form1_MouseDown;
+            back.MouseDown += Form1_MouseDown;
+
+            for (int i = 0; i < 6; i++)
+            {
+                Controls.Add(opmod[i]);
+                opmod[i].MouseDown += Form1_MouseDown;
+                opmod[i].Click += opmod_Click;
+                opmod[i].KeyDown += opmod_KeyDown;
+            }
+
             Background2.Image = Image.FromFile("white.png");
             Controls.Add(Background2);
             Controls.Add(back);
-            Controls.Add(mute);
             Background2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
             Background2.BringToFront();
             back.Click += back_Click;
@@ -378,21 +412,43 @@ namespace RPG
            
             back.BringToFront();
 
-            mute.Size = new Size(50, 50);
-            mute.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - 25, 460);
-
-            mute.TabStop = false;
-
-            mute.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            mute.MouseUp += new MouseEventHandler(Mute_MouseUp);
-            mute.BringToFront();
+            for (int i = 0; i < 6; i++)
+            {
+                opmod[i].BringToFront();
+            }
         }
-       
+
+        private void opmod_KeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        Label[] opmod = new Label[6];
+        int opchange = 0;
+        bool opbool = false;
+        private void opmod_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (opmod[i] == sender)
+                {
+                    opchange = i;
+                }
+                opmod[i].Enabled = false;
+            }
+            opbool = true;
+            back.Enabled = false;
+            
+        }
+
         private void back_Click(object sender, EventArgs e)
         {
             Controls.Remove(Background2);
-            Controls.Remove(mute);
             Controls.Remove(back);
+            for (int i = 0; i < 6; i++)
+            {
+                Controls.Remove(opmod[i]);
+            }
         }
         static PictureBox hat = new PictureBox();
         private void boomerang()
@@ -400,7 +456,7 @@ namespace RPG
             
             hat.Tag = "bullet.map";
             hat.Size = new Size(26, 13);
-            hat.Location = new Point(player.Left + (int)(player.Width / 2 - hat.Width / 2), player.Top + 4);
+            hat.Location = new Point(player.Left + (player.Width / 2 - hat.Width / 2), player.Top + 4);
             hat.Visible = true;
             hat.Enabled = false;
             Controls.Add(hat);
@@ -596,7 +652,7 @@ namespace RPG
             isesc = false;
         }
         bool isesc = false;
-
+        
         #region Menuevents
         private void Start_MouseEnter(object sender, EventArgs e)
         {
@@ -638,10 +694,58 @@ namespace RPG
         {
             Resume.BackColor = Color.White;
         }
+        private void opmod_MouseEnter(object sender, EventArgs e)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (opmod[i] == sender)
+                {
+                    opmod[i].BackColor = Color.LightGray;
+                }
+            }
+        }
+        private void opmod_MouseLeave(object sender, EventArgs e)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (opmod[i] == sender)
+                {
+                    opmod[i].BackColor = Color.White;
+                }
+            }
+        }
         #endregion
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.A)
+            if (opbool)
+            {
+                StreamWriter str = new StreamWriter("keyset.txt");
+                for (int i = 0; i < 6; i++)
+                {
+                    if (opchange == i)
+                    {
+                      //  str.WriteLine(e.KeyCode.ToString());
+                        opmod[i].Text = e.KeyCode.ToString(); 
+                    }
+                    else
+                    {
+                       // str.WriteLine(opmod[i].Text);
+                    }
+                }
+                str.Close();
+                opbool = false;
+                for (int i = 0; i < 6; i++)
+                {
+                    opmod[i].Enabled = true;
+                }
+                back.Enabled = true;
+            }
+            else if (e.KeyCode.ToString() == opmod[3].Text && fuelvalue > 0)
+            {
+                airwalk = true;
+                k = 0;
+            }
+            else if (e.KeyCode.ToString() == opmod[0].Text)
             {
                 left = true;
                 dir = "left";
@@ -682,7 +786,7 @@ namespace RPG
                     
 
                     Resume.Size = new Size(150, 50);
-                    Resume.Text = "RESUME";
+                    Resume.Text = "Resume";
                     Resume.Click += new EventHandler(Resume_Click);
                     Resume.BackColor = Color.White;
                     Resume.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Resume.Width / 2, 400);
@@ -690,7 +794,7 @@ namespace RPG
                     Resume.MouseLeave += new EventHandler(Resume_MouseLeave);
 
                     Restart.Size = new Size(150, 50);
-                    Restart.Text = "RESTART";
+                    Restart.Text = "Restart";
                     Restart.Click += new EventHandler(Restart_Click);
                     Restart.BackColor = Color.White;
                     Restart.Location = new Point(Screen.PrimaryScreen.Bounds.Width / 2 - Restart.Width / 2, 500);
@@ -746,7 +850,7 @@ namespace RPG
                     isplaying = true;
                 }
             }
-            else if (e.KeyCode == Keys.D)
+            else if (e.KeyCode.ToString() == opmod[1].Text)
             {
                 right = true;
                 dir = "right";
@@ -761,7 +865,7 @@ namespace RPG
                     player.BackColor = Color.Transparent;
                 }
             }
-            else if (e.KeyCode == Keys.Space && OnPlatform() && !airwalk && !keydown)
+            else if (e.KeyCode.ToString() == opmod[2].Text && OnPlatform() && !airwalk && !keydown)
             {
                 jump = true;
                 once = true;
@@ -877,7 +981,16 @@ namespace RPG
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.A)
+            if (e.KeyCode.ToString() == opmod[3].Text)
+            {
+                if (debug)
+                {
+
+                }
+                airwalk = false;
+                k = 0;
+            }
+            if (e.KeyCode.ToString() == opmod[0].Text)
             {
                 left = false;
                 if (!jump && !right)
@@ -885,7 +998,7 @@ namespace RPG
                     player.Image = Image.FromFile(@"player\left\0.png");
                 }
             }
-            else if (e.KeyCode == Keys.D)
+            else if (e.KeyCode.ToString() == opmod[1].Text)
             {
                 right = false;
                 if (!jump && !left)
@@ -893,7 +1006,7 @@ namespace RPG
                     player.Image = Image.FromFile(@"player\right\0.png");
                 }
             }
-            else if (e.KeyCode == Keys.Space && keydown)
+            else if (e.KeyCode.ToString() == opmod[2].Text && keydown)
             {
                 keydown = !keydown;
             }
@@ -1418,103 +1531,78 @@ namespace RPG
             }
 
         }
-        private void Mute_MouseUp(object sender, MouseEventArgs e)
-        {
-           
-            if (e.Button == MouseButtons.Left)
-            {
 
-                if (isplaying)
-                {
-                    BeginInvoke(new Action(() => 
-                    {
-                        mute.Image = Image.FromFile("mute.png");
-                        beatit.Stop();
-                        isplaying = false;
-                    }));
-                   
-                }
-                if (!isplaying)
-                {
-                    BeginInvoke(new Action(() =>
-                    {
-                        mute.Image = Image.FromFile("speaker.png");
-                        beatit.PlayLooping();
-                        isplaying = true;
-                    }));
-                    
-                }
-            }
-           
-        }
-        
-    private void Form1_MouseDown(object sender, MouseEventArgs e)
-    {
-        if (e.Button == MouseButtons.XButton1 && fuelvalue > 0)
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
-            airwalk = true;
-            k = 0;
-        }
-        else if (e.Button == MouseButtons.Right)
-        {
-            counter = 20;
-        }
-        else if (e.Button == MouseButtons.Left)
-        {
-            if (clickenabled)
+            if (opbool)
             {
-                clickenabled = false;
-                bullet = true;
-                if (MousePosition.Y == player.Top + 4 || MousePosition.X == player.Left + player.Width / 2)
+                for (int i = 0; i < 6; i++)
                 {
-                    if (MousePosition.X == player.Left + player.Width / 2)
+                    if (opchange == i)
                     {
-                        diry = 1;
-                        if (MousePosition.Y > player.Top + 4)
+                        opmod[i].Text = e.Button.ToString();
+                    }
+                }
+                opbool = false;
+                for (int i = 0; i < 6; i++)
+                {
+                    opmod[i].Enabled = true;
+                }
+                back.Enabled = true;
+
+            }
+            else if (e.Button.ToString() == opmod[5].Text)
+            {
+                counter = 20;
+            }
+            else if (e.Button.ToString() == opmod[4].Text)
+            {
+                if (clickenabled)
+                {
+                    clickenabled = false;
+                    bullet = true;
+                    if (MousePosition.Y == player.Top + 4 || MousePosition.X == player.Left + player.Width / 2)
+                    {
+                        if (MousePosition.X == player.Left + player.Width / 2)
                         {
-                            diry = -1;
+                            diry = 1;
+                            if (MousePosition.Y > player.Top + 4)
+                            {
+                                diry = -1;
+                            }
+                        }
+                        else
+                        {
+                            dirx = 1;
+                            if (MousePosition.X > player.Left + player.Width / 2)
+                            {
+                                dirx = -1;
+                            }
                         }
                     }
                     else
                     {
-                        dirx = 1;
-                        if (MousePosition.X > player.Left + player.Width / 2)
+                        float t = (float)Math.Abs(MousePosition.Y - (player.Top + 4)) / (float)(Math.Abs(MousePosition.Y - (player.Top + player.Width / 2)) + (float)Math.Abs(MousePosition.X - (player.Left + player.Width / 2)));
+                        int a = 1;
+                        if (MousePosition.Y < player.Top + 4)
                         {
-                            dirx = -1;
+                            a = -1;
                         }
+                        diry = t * a;
+                        a = 1;
+                        if (MousePosition.X < player.Left + player.Width / 2)
+                        {
+                            a = -1;
+                        }
+                        dirx = (1 - t) * a;
                     }
-                }
-                else
-                {
-                    float t = (float)Math.Abs(MousePosition.Y - (player.Top + 4)) / (float)(Math.Abs(MousePosition.Y - (player.Top + player.Width / 2)) + (float)Math.Abs(MousePosition.X - (player.Left + player.Width / 2)));
-                    int a = 1;
-                    if (MousePosition.Y < player.Top + 4)
-                    {
-                        a = -1;
-                    }
-                    diry = t * a;
-                    a = 1;
-                    if (MousePosition.X < player.Left + player.Width / 2)
-                    {
-                        a = -1;
-                    }
-                    dirx = (1 - t) * a;
                 }
             }
         }
-    }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.XButton1)
-            {
-                if (debug)
-                {
-
-                }
-                airwalk = false;
-                k = 0;
-            }
+           
         }
 
         int h2 = 0;
@@ -1689,5 +1777,7 @@ namespace RPG
             }
            
         }
+
+        
     }
 }

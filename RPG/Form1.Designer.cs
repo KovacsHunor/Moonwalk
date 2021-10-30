@@ -46,21 +46,23 @@ namespace RPG
             this.Fuel = new System.Windows.Forms.Timer(this.components);
             this.Heart = new System.Windows.Forms.Timer(this.components);
             this.Fallingdamage = new System.Windows.Forms.Timer(this.components);
+            this.Optionstimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // Start
             // 
             this.Start.BackColor = System.Drawing.Color.White;
-            this.Start.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.Start.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.Start.Location = new System.Drawing.Point(0, 0);
             this.Start.Name = "Start";
-            this.Start.Size = new System.Drawing.Size(150, 50);
-            this.Start.Text = "START";
+            this.Start.Size = new System.Drawing.Size(131, 38);
+            this.Start.TabIndex = 7;
+            this.Start.Text = "Start";
+            this.Start.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.Start.Click += new System.EventHandler(this.Start_Click);
             this.Start.MouseEnter += new System.EventHandler(this.Start_MouseEnter);
-            this.Start.MouseLeave += new EventHandler(Start_MouseLeave);
+            this.Start.MouseLeave += new System.EventHandler(this.Start_MouseLeave);
             // 
             // Exit
             // 
@@ -68,12 +70,13 @@ namespace RPG
             this.Exit.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.Exit.Location = new System.Drawing.Point(0, 0);
             this.Exit.Name = "Exit";
-            this.Exit.Size = new System.Drawing.Size(150, 50);
+            this.Exit.Size = new System.Drawing.Size(131, 38);
+            this.Exit.TabIndex = 6;
+            this.Exit.Text = "Exit";
             this.Exit.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.Exit.Text = "EXIT";
             this.Exit.Click += new System.EventHandler(this.Exit_Click);
             this.Exit.MouseEnter += new System.EventHandler(this.Exit_MouseEnter);
-            this.Exit.MouseLeave += new EventHandler(Exit_MouseLeave);
+            this.Exit.MouseLeave += new System.EventHandler(this.Exit_MouseLeave);
             // 
             // Options
             // 
@@ -81,12 +84,13 @@ namespace RPG
             this.Options.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.Options.Location = new System.Drawing.Point(0, 0);
             this.Options.Name = "Options";
-            this.Options.Size = new System.Drawing.Size(150, 50);
+            this.Options.Size = new System.Drawing.Size(131, 38);
+            this.Options.TabIndex = 5;
+            this.Options.Text = "Options";
             this.Options.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.Options.Text = "OPTIONS";
             this.Options.Click += new System.EventHandler(this.Options_Click);
             this.Options.MouseEnter += new System.EventHandler(this.Options_MouseEnter);
-            this.Options.MouseLeave += new EventHandler(Options_MouseLeave);
+            this.Options.MouseLeave += new System.EventHandler(this.Options_MouseLeave);
             // 
             // Main
             // 
@@ -114,12 +118,7 @@ namespace RPG
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1257, 293);
-            this.pictureBox1.TabIndex = 4;
-            this.pictureBox1.TabStop = false;
             // 
             // Fuel
             // 
@@ -141,14 +140,15 @@ namespace RPG
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1800, 851);
+            this.ClientSize = new System.Drawing.Size(1575, 638);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.Options);
             this.Controls.Add(this.Exit);
             this.Controls.Add(this.Start);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
@@ -174,6 +174,7 @@ namespace RPG
         private System.Windows.Forms.Timer Heart;
         private System.Windows.Forms.Timer Fallingdamage;
         private Timer Boomerang;
+        private Timer Optionstimer;
     }
 }
 
